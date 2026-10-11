@@ -9,641 +9,614 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-
     <style>
+        /* --- Global Styles --- */
         :root {
-            --bg-dark: #0b0e14;
-            --bg-primary: #121721;
-            --bg-secondary: #1a2232;
-            --bg-card: #202b3e;
-            --border-color: #2b3952;
-            --text-primary: #e6edf3;
-            --text-secondary: #94a3b8;
-            --accent-blue: #38bdf8;
-            --accent-green: #22c55e;
-            --accent-red: #ef4444;
-            --accent-yellow: #f59e0b;
-            --accent-purple: #a855f7;
-            --gold-gradient: linear-gradient(135deg, #f59e0b, #fbbf24);
+            --bg-dark: #0d1117; --bg-primary: #161b22; --bg-secondary: #21262d;
+            --border-color: #30363d; --text-primary: #c9d1d9; --text-secondary: #8b949e;
+            --accent-blue: #58a6ff; --accent-green: #3fb950; --accent-red: #f85149;
+            --accent-purple: #a371f7; --accent-yellow: #d29922;
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 10px 0;
+            font-family: 'Roboto', sans-serif; background-color: var(--bg-dark); color: var(--text-primary);
+            margin: 0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding-top: 10px; padding-bottom: 10px;
         }
+        .main-wrapper { width: 100%; max-width: 420px; background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px; height: 95vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .top-bar { display: flex; align-items: center; padding: 10px 15px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-color); }
+        .menu-btn { background: none; border: none; color: var(--text-primary); font-size: 1.8em; cursor: pointer; }
+        .top-bar h1 { font-size: 1.2em; margin: 0 auto; }
+        #mute-btn { margin-left: auto; font-size: 1.5em; padding: 0 10px; }
+        .page { display: none; padding: 15px; padding-bottom: 75px; flex-grow: 1; overflow-y: auto; }
+        .page.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .main-wrapper {
-            width: 100%;
-            max-width: 430px;
-            background-color: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            height: 96vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-
-        .top-bar {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            background-color: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            gap: 10px;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-        .icon-btn:hover { background-color: var(--bg-card); }
-        .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
-
-        .top-bar h1 {
-            font-size: 1.15em;
-            margin: 0;
-            font-weight: 700;
-            flex-grow: 1;
-            text-align: center;
-            letter-spacing: 0.5px;
-        }
-
-        .page {
-            display: none;
-            padding: 16px;
-            padding-bottom: 80px;
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-        .page.active { display: block; animation: fadeIn 0.25s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Sidebar */
-        .sidebar {
-            position: fixed; top: 0; left: -290px; width: 270px; height: 100%;
-            background-color: var(--bg-secondary); z-index: 2000;
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-right: 1px solid var(--border-color); display: flex; flex-direction: column;
-            backdrop-filter: blur(16px);
-        }
+        /* --- Sidebar & General UI --- */
+        .sidebar { position: fixed; top: 0; left: -280px; width: 250px; height: 100%; background-color: var(--bg-secondary); z-index: 1001; transition: left 0.3s ease-in-out; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
         .sidebar.open { left: 0; }
-        .sidebar-header { padding: 24px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        .sidebar-nav { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 10px 0; }
-        .sidebar-nav a {
-            display: flex; align-items: center; gap: 14px; padding: 14px 20px;
-            color: var(--text-primary); text-decoration: none; font-size: 0.95em;
-            font-weight: 500; transition: all 0.2s;
-        }
-        .sidebar-nav a svg { width: 20px; height: 20px; fill: currentColor; }
-        .sidebar-nav a:hover, .sidebar-nav a.active {
-            background-color: var(--bg-card);
-            color: var(--accent-blue);
-            border-left: 4px solid var(--accent-blue);
-        }
-        .sidebar-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.65); z-index: 1999; opacity: 0;
-            visibility: hidden; transition: opacity 0.3s;
-        }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .sidebar-nav { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 15px; padding: 15px 20px; color: var(--text-primary); text-decoration: none; border-bottom: 1px solid var(--border-color); transition: background-color 0.2s; }
+        .sidebar-nav a:hover { background-color: var(--bg-dark); }
+        .sidebar-nav a#logout-link { margin-top: auto; border-top: 1px solid var(--border-color); }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
         .sidebar-overlay.open { opacity: 1; visibility: visible; }
-
-        /* Buttons & Forms */
-        .btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 12px 18px; border: none; border-radius: 10px; font-size: 0.95em;
-            font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%;
+        .btn { padding: 10px 15px; border: none; border-radius: 6px; font-size: 1em; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .btn:disabled { background-color: var(--text-secondary) !important; cursor: not-allowed; }
+        .btn-green { background-color: var(--accent-green) !important; color: white !important; }
+        .btn-primary { background-color: var(--accent-blue) !important; color: white !important; }
+        .btn-red { background-color: var(--accent-red) !important; color: white !important; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9em; }
+        .input-group input { width: 100%; padding: 10px; font-size: 1em; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--bg-dark); color: var(--text-primary); box-sizing: border-box; }
+        .input-group select {
+            width: 100%; padding: 10px; font-size: 1em; border-radius: 6px; 
+            border: 1px solid var(--border-color); background-color: var(--bg-dark); 
+            color: var(--text-primary); box-sizing: border-box;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9d1d9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1em;
         }
-        .btn svg { width: 18px; height: 18px; fill: currentColor; }
-        .btn:disabled { opacity: 0.55; cursor: not-allowed; }
-        .btn-green { background-color: var(--accent-green); color: #fff; }
-        .btn-primary { background-color: var(--accent-blue); color: #0b0e14; }
-        .btn-red { background-color: var(--accent-red); color: #fff; }
-        .btn-yellow { background-color: var(--accent-yellow); color: #0b0e14; }
 
-        .input-group { margin-bottom: 14px; }
-        .input-group label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 0.85em; font-weight: 500; }
-        .input-group input, .input-group select {
-            width: 100%; padding: 12px 14px; font-size: 0.95em; border-radius: 10px;
-            border: 1px solid var(--border-color); background-color: var(--bg-dark);
-            color: var(--text-primary); outline: none; transition: border 0.2s;
-        }
-        .input-group input:focus, .input-group select:focus { border-color: var(--accent-blue); }
+        /* --- Loader Styles --- */
+        #loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); display: flex; justify-content: center; align-items: center; z-index: 10000; transition: opacity 0.5s; }
+        .loader { border: 5px solid var(--bg-secondary); border-top: 5px solid var(--accent-blue); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        .loader-small { margin: 20px auto; border: 3px solid var(--bg-secondary); border-top: 3px solid var(--accent-blue); border-radius: 50%; width: 25px; height: 25px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Bottom Nav */
+        /* --- Auth Page Styles --- */
+        #auth-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        #auth-box { width: 90%; max-width: 380px; padding: 25px; background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px; }
+        #auth-box h2 { text-align: center; margin-top: 0; margin-bottom: 20px; color: var(--text-primary); }
+        .auth-error { color: var(--accent-red); background-color: rgba(248, 81, 73, 0.1); border: 1px solid var(--accent-red); border-radius: 6px; padding: 10px; margin-bottom: 15px; font-size: 0.9em; text-align: center; display: none; }
+        .auth-toggle-text { text-align: center; font-size: 0.9em; margin-top: 20px; color: var(--text-secondary); }
+        .auth-toggle-text a { color: var(--accent-blue); text-decoration: none; font-weight: 500; cursor: pointer; }
+
+        /* --- Bottom Navigation Bar Styles --- */
         .bottom-nav {
-            position: absolute; bottom: 0; left: 0; right: 0; height: 64px;
-            background-color: var(--bg-secondary); border-top: 1px solid var(--border-color);
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
         }
         .bottom-nav-item {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--text-secondary); text-decoration: none; font-size: 0.75em;
-            font-weight: 600; flex: 1; height: 100%; gap: 4px; transition: color 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.75em;
+            flex: 1;
+            height: 100%;
+            transition: color 0.2s, transform 0.1s;
         }
-        .bottom-nav-item svg { width: 22px; height: 22px; fill: currentColor; }
-        .bottom-nav-item.active { color: var(--accent-blue); }
+        .bottom-nav-item .nav-icon {
+            font-size: 1.5em;
+            margin-bottom: 2px;
+        }
+        .bottom-nav-item:hover, .bottom-nav-item.active {
+            color: var(--accent-blue);
+        }
+        .bottom-nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
 
-        /* Wallet Cards & Tabs */
-        .wallet-summary {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            padding: 22px; border-radius: 14px; border: 1px solid var(--border-color);
-            text-align: center; margin-bottom: 20px;
-        }
-        .wallet-summary .balance { font-size: 2.4em; font-weight: 800; color: #fff; margin: 8px 0 18px 0; }
-        .wallet-actions { display: flex; gap: 12px; }
-
-        .history-tabs {
-            display: flex; background: var(--bg-secondary); border-radius: 10px;
-            padding: 4px; margin-bottom: 15px; border: 1px solid var(--border-color);
-        }
-        .history-tab-btn {
-            flex: 1; padding: 10px; border: none; background: transparent;
-            color: var(--text-secondary); font-size: 0.85em; font-weight: 600;
-            border-radius: 8px; cursor: pointer; transition: 0.2s;
-        }
-        .history-tab-btn.active { background: var(--bg-card); color: var(--accent-blue); }
-        .history-tab-content { display: none; }
-        .history-tab-content.active { display: block; }
-
-        .history-table { width: 100%; border-collapse: collapse; }
-        .history-table th, .history-table td {
-            padding: 10px 8px; text-align: left; font-size: 0.82em;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .history-table th { color: var(--text-secondary); font-weight: 600; }
-        .badge-pending { color: var(--accent-yellow); font-weight: 600; }
-        .badge-approved { color: var(--accent-green); font-weight: 600; }
-        .badge-rejected { color: var(--accent-red); font-weight: 600; }
-
-        /* Game Elements */
-        .game-grid { display: grid; gap: 14px; margin-bottom: 20px; }
-        .game-card.image-card {
-            background-color: var(--bg-secondary); border-radius: 14px; border: 1px solid var(--border-color);
-            overflow: hidden; cursor: pointer; transition: transform 0.2s;
-        }
-        .game-card:hover { transform: translateY(-3px); }
-        .game-card .card-img-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; }
+        /* --- Home Page --- */
+        .game-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px; }
+        .game-card.image-card { background-color: var(--bg-secondary); border-radius: 10px; text-align: center; cursor: pointer; transition: transform 0.2s; border: 1px solid var(--border-color); padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+        .game-card.image-card:hover { transform: translateY(-5px); }
+        .game-card .card-img-wrapper { width: 100%; aspect-ratio: 16 / 9; background-color: var(--bg-dark); }
         .game-card .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        .game-card .card-title { padding: 14px; margin: 0; font-size: 1.1em; font-weight: 700; }
+        .game-card .card-title { padding: 15px; margin: 0; font-size: 1.2em; font-weight: bold; color: var(--text-primary); }
+        
+        .promo-scroller-wrapper { overflow-x: auto; margin-bottom: 20px; display: none; -ms-overflow-style: none; scrollbar-width: none; }
+        .promo-scroller-wrapper::-webkit-scrollbar { display: none; }
+        .promo-scroller-inner { display: flex; gap: 10px; padding: 2px 0; }
+        .promo-scroller-item { flex: 0 0 85%; max-width: 320px; }
+        .promo-scroller-item img { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border-color); display: block; }
 
-        .ct-container { background-color: var(--bg-secondary); padding: 16px; border-radius: 14px; border: 1px solid var(--border-color); }
-        .ct-header {
-            background: linear-gradient(135deg, #ef4444, #b91c1c);
-            padding: 16px; border-radius: 12px; color: #fff; margin-bottom: 18px;
+        /* --- Wallet Page --- */
+        .wallet-summary { background-color: var(--bg-secondary); padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
+        .wallet-summary .balance { font-size: 2.5em; font-weight: 700; margin: 5px 0 20px 0; }
+        .wallet-actions { display: flex; gap: 15px; } .wallet-actions .btn { flex: 1; }
+        .transaction-history table { width: 100%; border-collapse: collapse; }
+        .transaction-history th, .transaction-history td { padding: 12px 8px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9em; }
+        .tx-credit { color: var(--accent-green); } .tx-debit { color: var(--accent-red); }
+
+        /* --- Leaderboard Page Styles --- */
+        .leaderboard-table table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .leaderboard-table th, .leaderboard-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .leaderboard-table th { color: var(--text-secondary); }
+        .leaderboard-table td:nth-child(1) { font-weight: 700; color: var(--accent-yellow); text-align: center; width: 60px; }
+        .leaderboard-table td:nth-child(3) { font-weight: 700; color: var(--accent-green); }
+        .leaderboard-table tr:nth-child(1) td:nth-child(1)::before { content: '🥇 '; }
+        .leaderboard-table tr:nth-child(2) td:nth-child(1)::before { content: '🥈 '; }
+        .leaderboard-table tr:nth-child(3) td:nth-child(1)::before { content: '🥉 '; }
+        
+        /* --- In-Game Balance Display --- */
+        .game-header-balance {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: var(--bg-dark); padding: 8px 12px;
+            border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color);
         }
-        .ct-header-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.85em; font-weight: 600; }
+        .game-header-balance span { font-size: 0.9em; color: var(--text-secondary); }
+        .game-header-balance strong { font-size: 1.1em; color: var(--accent-green); }
+
+        /* --- Game Result Dialog Styles (CT) --- */
+        .dialog-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
+        .dialog-overlay.show { display: flex; animation: fadeIn 0.3s; }
+        .ct-dialog-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .ct-dialog-overlay.show { display: flex; animation: fadeIn 0.3s; }
+        
+        .ct-dialog { background: var(--bg-secondary); color: white; border-radius: 15px; width: 85%; max-width: 320px; text-align: center; position: relative; padding-top: 50px; box-shadow: 0 5px 20px rgba(0,0,0,0.4); border: 1px solid var(--border-color); }
+        .ct-dialog-header { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); }
+        .ct-icon-badge { width: 70px; height: 70px; border-radius: 50%; border: 5px solid var(--bg-secondary); display: flex; justify-content: center; align-items: center; font-size: 2.5em; position: relative; }
+        
+        .win-dialog .ct-icon-badge { background: linear-gradient(45deg, var(--accent-green), #86ef92); }
+        .loss-dialog .ct-icon-badge { background: linear-gradient(45deg, var(--accent-red), #f88a84); }
+        
+        .ct-dialog-content { padding: 20px; }
+        .ct-dialog-content h2 { margin-top: 0; margin-bottom: 15px; }
+        .ct-lottery-results { margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9em; color: var(--text-secondary); }
+        .result-tag { background: var(--bg-dark); padding: 3px 8px; border-radius: 5px; color: var(--text-primary); font-weight: 500;}
+        
+        .ct-bonus-ticket { background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; margin-bottom: 20px; position: relative; border-top: 3px solid var(--accent-yellow); }
+        .ct-bonus-ticket.loss-ticket { border-top-color: var(--text-secondary); }
+        .ct-bonus-ticket p { margin: 0; color: var(--text-secondary); font-size: 0.9em; }
+        .ct-bonus-ticket h3 { margin: 5px 0; font-size: 2em; }
+        .win-dialog .ct-bonus-ticket h3 { color: var(--accent-green); }
+        .loss-dialog .ct-bonus-ticket h3 { color: var(--accent-red); }
+        
+        .ct-bonus-ticket .period-info { font-size: 0.8em; color: var(--text-secondary); margin-top: 10px; }
+        .dialog-close { position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); background: none; border: 2px solid rgba(255,255,255,0.7); color: white; width: 30px; height: 30px; border-radius: 50%; font-size: 1.5em; line-height: 26px; cursor: pointer; }
+
+        /* --- Deposit/Withdraw/Confirm Dialog Styles --- */
+        .dialog-box { background: var(--bg-secondary); color: var(--text-primary); border-radius: 10px; width: 100%; max-width: 380px; padding: 20px; position: relative; border: 1px solid var(--border-color); box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
+        .dialog-box h2 { margin-top: 0; text-align: center; margin-bottom: 20px; }
+        .dialog-close-btn { position: absolute; top: 5px; right: 10px; background: none; border: none; color: var(--text-secondary); font-size: 2em; cursor: pointer; line-height: 1; }
+        .dialog-instructions { font-size: 0.9em; color: var(--text-secondary); margin: 15px 0 5px 0; }
+        .upi-info { display: flex; align-items: center; gap: 10px; background: var(--bg-dark); padding: 10px; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 1.1em; }
+        #upi-id-text { flex-grow: 1; color: var(--accent-yellow); }
+        .btn-small { padding: 5px 10px; font-size: 0.8em; background-color: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer; }
+        .amount-selector { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+        .btn-amount { flex: 1 1 45%; padding: 8px; font-size: 1em; background-color: var(--bg-dark); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .btn-amount:hover { background-color: var(--bg-primary); }
+        .dialog-confirm-details { text-align: center; margin: 20px 0; font-size: 1.1em; line-height: 1.5; }
+        .dialog-confirm-details strong { color: var(--accent-yellow); }
+        .dialog-actions { display: flex; gap: 15px; margin-top: 25px; }
+        .dialog-actions .btn { flex: 1; }
+
+        /* --- Win Go 1Min Game Styles --- */
+        .ct-container { background-color: var(--bg-dark); padding: 15px; border-radius: 8px; }
+        .ct-header { background: linear-gradient(135deg, var(--accent-red), #e4433c); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(248, 81, 73, 0.2); }
+        .ct-header-top { display: flex; justify-content: space-between; align-items: center; font-size: .9em; opacity: 0.9; }
+        .ct-header-top span:last-child { cursor: pointer; background: rgba(255,255,255,0.15); padding: 4px 8px; border-radius: 12px; transition: background-color 0.2s; }
+        .ct-header-top span:last-child:hover { background: rgba(255,255,255,0.3); }
         .ct-header-main { text-align: center; padding: 10px 0; }
-        .ct-header-main .timer { font-size: 2.8em; font-weight: 900; letter-spacing: 2px; margin: 0; }
-        .ct-main-bets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-        .ct-number-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 16px; }
-        .ct-number-btn { aspect-ratio: 1/1; border: none; background: transparent; cursor: pointer; padding: 0; border-radius: 50%; }
-        .ct-number-btn img { width: 100%; height: 100%; object-fit: contain; }
-        .ct-bet-multipliers { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 16px; }
-        .ct-bet-multipliers .btn { padding: 8px 4px; font-size: 0.8em; background-color: var(--bg-dark); color: var(--text-primary); }
-        .ct-big-small-bet { display: flex; gap: 10px; margin-bottom: 16px; }
+        .ct-header-main .label { font-size: 1.1em; margin-bottom: 5px; opacity: 0.9; }
+        .ct-header-main .timer { font-size: 2.8em; font-weight: 700; letter-spacing: 2px; margin: 0; }
+        .ct-header-main .period { font-size: .9em; letter-spacing: 1px; opacity: 0.8; margin-top: 5px;}
+        .ct-main-bets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .ct-main-bets .btn { padding: 15px 0; font-size: 1.1em; font-weight: 700; text-transform: uppercase; }
+        .ct-number-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
+        .ct-number-btn {
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0;
+        }
+        .ct-number-btn:hover { transform: scale(1.1); }
+        .ct-number-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .ct-bet-multipliers { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .ct-bet-multipliers .btn { background-color: var(--bg-dark); color: var(--text-primary); }
+        .ct-big-small-bet { display: flex; gap: 10px; margin-bottom: 20px; }
+        .ct-big-small-bet .btn { flex: 1; padding: 15px 0; font-size: 1.1em; font-weight: 700; text-transform: uppercase; }
+        .ct-history-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 10px; }
+        .ct-history-tabs .tab { padding: 10px 15px; cursor: pointer; color: var(--text-secondary); position: relative; }
+        .ct-history-tabs .tab.active { color: var(--accent-blue); }
+        .ct-history-tabs .tab.active::after { content:''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background-color: var(--accent-blue); }
+        .ct-history-content { display: none; } .ct-history-content.active { display: block; }
+        .ct-history-table table { width: 100%; text-align: center; }
+        .ct-history-table th, .ct-history-table td { padding: 8px 5px; font-size: .9em; }
 
-        /* Dialogs / Modals */
-        .dialog-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.75); z-index: 3000; display: none;
-            justify-content: center; align-items: center; padding: 16px;
-        }
-        .dialog-overlay.show { display: flex; animation: fadeIn 0.25s; }
-        .dialog-box {
-            background: var(--bg-secondary); border-radius: 16px; border: 1px solid var(--border-color);
-            width: 100%; max-width: 380px; padding: 22px; position: relative; max-height: 90vh; overflow-y: auto;
-        }
-        .dialog-box h2 { margin: 0 0 16px 0; text-align: center; font-size: 1.25em; font-weight: 700; }
-        .dialog-close-btn { position: absolute; top: 14px; right: 14px; background: none; border: none; color: var(--text-secondary); cursor: pointer; }
-        .dialog-close-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        /* --- Auto-bet Styles --- */
+        .auto-toggle-container { display: flex; align-items: center; gap: 10px; margin: 15px 0 10px 0; background: var(--bg-dark); padding: 10px; border-radius: 8px; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-secondary); transition: .4s; border: 1px solid var(--border-color); }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; }
+        input:checked + .slider { background-color: var(--accent-green); }
+        input:checked + .slider:before { transform: translateX(24px); }
+        .slider.round { border-radius: 34px; } .slider.round:before { border-radius: 50%; }
+        #ct_auto_panel { background-color: var(--bg-dark); padding: 10px 15px 1px 15px; border-radius: 8px; margin-bottom: 15px; }
 
-        /* Amount Presets Grid */
-        .amount-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0 18px 0; }
-        .btn-amount {
-            padding: 10px 4px; background-color: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 10px; color: var(--text-primary); font-size: 0.95em; font-weight: 600;
-            cursor: pointer; transition: all 0.2s; text-align: center;
-        }
-        .btn-amount:hover, .btn-amount.active { background-color: var(--accent-blue); color: #000; border-color: var(--accent-blue); }
-
-        /* Policy & Terms Notice Box */
-        .terms-box {
-            background-color: rgba(245, 158, 11, 0.08);
-            border: 1px solid rgba(245, 158, 11, 0.25);
-            border-radius: 10px;
-            padding: 12px 14px;
-            font-size: 0.82em;
-            color: #cbd5e1;
-            line-height: 1.5;
-            margin: 14px 0;
-        }
-        .terms-box ul { margin: 6px 0 0 0; padding-left: 18px; }
-        .terms-box li { margin-bottom: 4px; }
-        .terms-box strong { color: var(--accent-yellow); }
-
-        /* First Deposit Bonus Dialog (Image 1 Style) */
-        .bonus-dialog-box {
-            background: #ffffff;
-            color: #1e293b;
-            border-radius: 20px;
-            padding: 20px 16px;
-            max-width: 370px;
-        }
-        .bonus-dialog-box h3 { margin: 0; font-size: 1.2em; text-align: center; font-weight: 800; color: #0f172a; }
-        .bonus-dialog-box p.subtext { margin: 4px 0 16px 0; text-align: center; font-size: 0.8em; color: #64748b; }
-        .bonus-card-list { display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto; padding-right: 2px; }
-        .bonus-card-item {
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;
-            display: flex; flex-direction: column; gap: 6px;
-        }
-        .bonus-card-top { display: flex; justify-content: space-between; align-items: center; }
-        .bonus-card-top .dep-title { font-weight: 700; font-size: 0.9em; color: #0f172a; }
-        .bonus-card-top .dep-val { font-weight: 800; font-size: 0.9em; color: #ea580c; }
-        .bonus-card-desc { font-size: 0.75em; color: #64748b; line-height: 1.3; }
-        .bonus-card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
-        .bonus-progress { font-size: 0.75em; color: #94a3b8; font-weight: 600; }
-        .bonus-claim-btn {
-            background: #fff; border: 1px solid #ea580c; color: #ea580c; padding: 5px 16px;
-            border-radius: 20px; font-size: 0.8em; font-weight: 700; cursor: pointer;
-        }
-
-        /* Win Dialog (Image 3 Style) */
-        .win-modal-card {
-            position: relative; width: 92%; max-width: 330px;
-            background: linear-gradient(180deg, #ff6a00 0%, #ee0979 100%);
-            border-radius: 26px; padding: 68px 16px 20px 16px; text-align: center;
-            box-shadow: 0 15px 35px rgba(238, 9, 121, 0.4); border: 3px solid #ff9900;
-        }
-        .win-badge-wrapper { position: absolute; top: -50px; left: 50%; transform: translateX(-50%); }
-        .win-badge-circle {
-            width: 86px; height: 86px; background: radial-gradient(circle, #fff6a5 20%, #fdbb2d 70%, #d48806 100%);
-            border-radius: 50%; border: 4px solid #fff275; display: flex; justify-content: center; align-items: center;
-        }
-        .win-badge-circle svg { width: 44px; height: 44px; fill: #d97706; }
-        .win-ribbon {
-            position: absolute; top: 32px; left: 50%; transform: translateX(-50%);
-            width: 200px; height: 34px; background: linear-gradient(180deg, #ffd000, #ff8c00);
-            border-radius: 20px; z-index: -1; border: 2px solid #fff382;
-        }
-        .win-title-3d {
-            font-size: 2em; font-weight: 900; margin: 4px 0 12px 0; color: #fff;
-            text-shadow: 0 2px 0 #d32f2f, 0 4px 0 #b71c1c; font-family: 'Roboto', sans-serif;
-        }
-        .win-results-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; font-size: 0.9em; font-weight: 700; }
-        .win-pill { background: #ff2a2a; color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 0.85em; }
-        .win-slot-container { background: #b71c1c; padding-top: 6px; border-radius: 14px; margin-bottom: 14px; }
-        .win-ticket-paper {
-            background: #fff; border-radius: 10px; padding: 14px 10px; color: #333;
-            clip-path: polygon(0% 0%, 100% 0%, 98% 95%, 2% 98%);
-        }
-        .win-ticket-paper .bonus-label { margin: 0; color: #e50914; font-size: 1.1em; font-weight: 800; }
-        .win-ticket-paper .bonus-amount { margin: 4px 0; font-size: 2em; font-weight: 900; color: #e50914; }
-        .win-autoclose-bar {
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            color: #fff; font-size: 0.85em; font-weight: 600; cursor: pointer;
-        }
-        .win-autoclose-bar span.check-icon {
-            width: 18px; height: 18px; background: rgba(255,255,255,0.3); border-radius: 50%;
-            display: inline-flex; align-items: center; justify-content: center;
-        }
+        /* --- How To Play Dialog Styles --- */
+        .ct-how-to-play-overlay { z-index: 3002; }
+        .how-to-play-box .dialog-content { padding: 0 20px 20px 20px; text-align: left; max-height: 60vh; overflow-y: auto; }
+        .how-to-play-box h3 { color: var(--accent-yellow); margin-top: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        .how-to-play-box p { color: var(--text-secondary); line-height: 1.6; font-size: 0.95em; }
+        .how-to-play-box ul { list-style: none; padding-left: 0; }
+        .how-to-play-box li { background: var(--bg-dark); margin-bottom: 8px; padding: 10px; border-radius: 6px; border-left: 3px solid var(--accent-blue); }
+        .how-to-play-box strong { color: var(--text-primary); }
     </style>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-glass: rgba(21, 25, 34, 0.6);
+      --bg-primary: #161b22;
+      --border-color: #30363d;
+      --text-primary: #c9d1d9;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-red: #f85149;
+      --accent-purple: #a371f7;
+      --accent-yellow: #d29922;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+    }
+    .top-bar {
+      background: linear-gradient(270deg, #ff416c, #ff4b2b, #1cb5e0, #000851);
+      background-size: 800% 800%;
+      animation: gradientBG 12s ease infinite;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .sidebar {
+      background: var(--bg-glass) !important;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      border-right: 1px solid var(--border-color);
+    }
+    .btn {
+      background: linear-gradient(to right, var(--accent-blue), var(--accent-green)) !important;
+      color: #fff !important;
+      padding: 12px 18px !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      border: none !important;
+      transition: all 0.3s !important;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .shimmer-loader {
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(to right, #2a2e35 8%, #3a3f48 18%, #2a2e35 33%);
+      background-size: 1000px 100%;
+      animation: shimmerAnim 1.5s infinite linear;
+      margin: 16px 0;
+    }
+    @keyframes shimmerAnim {
+      0% { background-position: -1000px 0; }
+      100% { background-position: 1000px 0; }
+    }
+    input, select {
+      background: var(--bg-dark) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 6px !important;
+      padding: 10px !important;
+    }
+  </style>
+
 </head>
 <body>
+  <div class="shimmer-loader"></div>
 
-    <div class="main-wrapper">
-        <header class="top-bar">
-            <button class="icon-btn" onclick="toggleSidebar()" aria-label="Menu">
-                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-            </button>
+    <!-- Global Loader -->
+    <div id="loader-overlay"><div class="loader"></div></div>
+
+    <!-- Authentication Container -->
+    <div id="auth-container" style="display: none;">
+        <div id="auth-box">
+            <!-- LOGIN FORM -->
+            <div id="login-form">
+                <h2>Login</h2>
+                <p class="auth-error" id="login-error"></p>
+                <div class="input-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <!-- Privacy Policy Checkbox (Login) -->
+                <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="login-agree" style="width: auto;" required>
+                    <label for="login-agree" style="margin: 0; font-size: 0.85em;">I agree to the <a href="#" id="login-privacy-link" target="_blank" style="color: var(--accent-blue);">Privacy Policy</a></label>
+                </div>
+                <button id="login-btn" class="btn btn-primary" style="width: 100%;">Login</button>
+                <p class="auth-toggle-text">No account? <a href="#" id="show-signup">Sign Up</a></p>
+            </div>
+            
+            <!-- SIGNUP FORM -->
+            <div id="signup-form" style="display: none;">
+                <h2>Sign Up</h2>
+                <p class="auth-error" id="signup-error"></p>
+                <div class="input-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="input-group">
+                    <label for="signup-password">Password (min. 6 characters)</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <!-- Privacy Policy Checkbox (Signup) -->
+                <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="signup-agree" style="width: auto;" required>
+                    <label for="signup-agree" style="margin: 0; font-size: 0.85em;">I agree to the <a href="#" id="signup-privacy-link" target="_blank" style="color: var(--accent-blue);">Privacy Policy</a></label>
+                </div>
+                <button id="signup-btn" class="btn btn-green" style="width: 100%;">Sign Up</button>
+                <p class="auth-toggle-text">Already have an account? <a href="#" id="show-login">Login</a></p>
+            </div>
+
+            <!-- EMAIL VERIFICATION PAGE / SCREEN -->
+            <div id="verify-form" style="display: none; text-align: center;">
+                <h2>Verify Your Email</h2>
+                <div style="font-size: 3em; margin-bottom: 10px;">📩</div>
+                <p id="verify-message" style="font-size: 0.9em; color: var(--text-secondary); line-height: 1.5; margin-bottom: 15px;">
+                    A verification link was sent to your email. Please check your inbox (and spam folder), click the link, and then press the button below.
+                </p>
+                <p class="auth-error" id="verify-error"></p>
+                <button id="check-verified-btn" class="btn btn-green" style="width: 100%; margin-bottom: 10px;">I have verified (Check & Login)</button>
+                <button id="resend-verify-btn" class="btn btn-primary" style="width: 100%; margin-bottom: 15px;">Resend Email</button>
+                <p class="auth-toggle-text"><a id="back-to-login">← Back to Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Wrapper -->
+    <div class="main-wrapper" style="display: none;">
+        <div class="top-bar">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <img id="dynamic-logo-top" src="" style="display:none; height: 30px; margin-left: 10px; border-radius: 4px;">
             <h1 id="page-title">Home</h1>
-            <button class="icon-btn" id="open-bonus-btn" title="First Deposit Bonus">
-                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            </button>
-        </header>
-
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+            <button id="mute-btn" class="menu-btn" style="margin-left: auto; font-size: 1.5em;">🔊</button>
+        </div>
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2 style="margin: 0; font-size: 1.2em; font-weight: 800; color: var(--accent-blue);">Pro Hub</h2>
-                <div id="user-email-display" style="font-size: 0.8em; color: var(--text-secondary); margin-top: 6px;"></div>
+                <img id="dynamic-logo-sidebar" src="" style="display:none; max-height: 50px; margin-bottom: 10px; border-radius: 4px;">
+                <h2 id="app-brand-name" style="margin: 0;">Pro Hub</h2>
+                <div id="user-email-display" style="font-size: 0.7em; color: var(--text-secondary); margin-top: 5px; display: none;"></div>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" class="nav-link active" data-page="home-page">
-                    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Home
-                </a>
-                <a href="#" class="nav-link" data-page="wallet-page">
-                    <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg> My Wallet
-                </a>
-                <a href="#" class="nav-link" data-page="color-trading-page">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg> Win Go 1Min
-                </a>
-                <a href="#" id="logout-link" style="margin-top: auto; color: var(--accent-red);">
-                    <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg> Logout
-                </a>
+                <a href="#" class="nav-link active" data-page="home-page"><span>🏠</span> Home</a>
+                <a href="#" class="nav-link" data-page="wallet-page"><span>💰</span> My Wallet</a>
+                <a href="#" class="nav-link" data-page="leaderboard-page"><span>🏆</span> Leaderboard</a>
+                <a href="#" class="nav-link" data-page="color-trading-page"><span>🎨</span> <span id="sidebar-game-name">Win Go 1Min</span></a>
+                <a href="#" id="nav-privacy-link" target="_blank" style="display: none;"><span>📄</span> Privacy Policy</a>
+                <a href="#" id="logout-link"><span>🚪</span> Logout</a>
             </nav>
-        </aside>
+        </div>
         <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-        <!-- Home Page -->
+        <!-- ========= PAGES ========= -->
         <div id="home-page" class="page active">
-            <h3 style="margin-top: 0; font-size: 1.05em; font-weight: 700;">Popular Games</h3>
+            <div id="promo-scroller-wrapper" class="promo-scroller-wrapper"><div id="promo-scroller-inner" class="promo-scroller-inner"></div></div>
+            <h3>Popular Games</h3>
             <div class="game-grid">
                 <div class="game-card image-card" onclick="showPage('color-trading-page')">
                     <div class="card-img-wrapper">
-                        <img id="dynamic-game-img" src="https://i.ibb.co/whtPxrws/Uvd-SHB7n.jpg" alt="Win Go">
+                        <img id="dynamic-game-img" src="https://i.ibb.co/whtPxrws/Uvd-SHB7n.jpg" alt="Win Go 1Min">
                     </div>
-                    <h3 class="card-title">Win Go 1Min</h3>
+                    <h3 class="card-title" id="dynamic-game-name">Win Go 1Min</h3>
                 </div>
             </div>
         </div>
 
-        <!-- Wallet Page -->
         <div id="wallet-page" class="page">
-            <div class="wallet-summary">
-                <span style="font-size: 0.85em; color: var(--text-secondary); font-weight: 500;">Total Balance</span>
-                <div class="balance">₹<span id="wallet_balance">0.00</span></div>
-                <div class="wallet-actions">
-                    <button id="open-deposit-modal-btn" class="btn btn-green">
-                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Deposit
-                    </button>
-                    <button id="open-withdraw-modal-btn" class="btn btn-primary">
-                        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Withdraw
-                    </button>
-                </div>
-            </div>
-
-            <!-- History Tabs -->
-            <div class="history-tabs">
-                <button class="history-tab-btn active" data-tab="dep-hist">Deposit History</button>
-                <button class="history-tab-btn" data-tab="with-hist">Withdrawal History</button>
-            </div>
-
-            <div id="dep-hist" class="history-tab-content active">
-                <table class="history-table">
-                    <thead><tr><th>Date</th><th>Amount</th><th>UTR</th><th>Status</th></tr></thead>
-                    <tbody id="deposit_history_tbody">
-                        <tr><td colspan="4" style="text-align:center; color:var(--text-secondary);">Loading deposits...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="with-hist" class="history-tab-content">
-                <table class="history-table">
-                    <thead><tr><th>Date</th><th>Amount</th><th>UPI ID</th><th>Status</th></tr></thead>
-                    <tbody id="withdraw_history_tbody">
-                        <tr><td colspan="4" style="text-align:center; color:var(--text-secondary);">Loading withdrawals...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="wallet-summary"><p class="label">Total Balance</p><p class="balance">₹<span id="wallet_balance">0.00</span></p><div class="wallet-actions"><button id="deposit-btn" class="btn btn-green">Deposit</button><button id="withdraw-btn" class="btn btn-primary">Withdraw</button></div></div>
+            <h3>Transaction History</h3><div class="transaction-history"><table><thead><tr><th>Description</th><th>Amount</th><th>Date</th></tr></thead><tbody id="transaction_history_body"></tbody></table></div>
+        </div>
+        
+        <div id="leaderboard-page" class="page">
+            <h3>🏆 Top Players</h3><p style="color: var(--text-secondary); font-size: 0.9em;">Leaderboard of the top players by balance. Updates in real-time.</p><div class="leaderboard-table"><table><thead><tr><th>Rank</th><th>Player</th><th>Balance</th></tr></thead><tbody id="leaderboard_body"></tbody></table></div>
         </div>
 
-        <!-- Color Trading Game -->
         <div id="color-trading-page" class="page">
+            <div class="game-header-balance"><span>Balance:</span><strong class="game-balance-value">₹0.00</strong></div>
             <div class="ct-container">
-                <div class="ct-header">
-                    <div class="ct-header-top">
-                        <span>Win Go 1Min</span>
-                        <span>Period: <span id="ct_period">...</span></span>
-                    </div>
-                    <div class="ct-header-main">
-                        <p style="margin: 0; font-size: 0.8em; opacity: 0.85;">Time remaining</p>
-                        <p class="timer" id="ct_timer">00:00</p>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>Bet Amount (₹)</label>
-                    <input type="number" id="ct_bet_amount" value="10">
-                </div>
-
-                <div class="ct-main-bets">
-                    <button class="btn btn-green" onclick="ct_placeBet('color', 'Green')">Green</button>
-                    <button class="btn btn-red" onclick="ct_placeBet('color', 'Red')">Red</button>
-                    <button class="btn" style="background-color: var(--accent-purple); color:#fff;" onclick="ct_placeBet('color', 'Violet')">Violet</button>
-                </div>
-
+                <div class="ct-header"><div class="ct-header-top"><span>🏆 <span class="game-name-text">Win Go 1Min</span></span><span id="ct_how_to_play_btn">ⓘ How to play</span></div><div class="ct-header-main"><p class="label">Time remaining</p><p class="timer" id="ct_timer">00:00</p><p class="period" id="ct_period">202312...</p></div></div>
+                <div class="input-group"><input type="number" id="ct_bet_amount" placeholder="Enter bet amount" value="10"></div>
+                <div class="ct-main-bets"><button class="btn btn-green" onclick="ct_placeBet('color', 'Green')">Green</button><button class="btn btn-red" onclick="ct_placeBet('color', 'Red')">Red</button><button class="btn" style="background-color: var(--accent-purple);" onclick="ct_placeBet('color', 'Violet')">Violet</button></div>
                 <div class="ct-number-grid" id="ct_number_grid"></div>
-
-                <div class="ct-big-small-bet">
-                    <button class="btn btn-yellow" onclick="ct_placeBet('size', 'Big')">Big (5-9)</button>
-                    <button class="btn btn-primary" onclick="ct_placeBet('size', 'Small')">Small (0-4)</button>
-                </div>
+                <div class="ct-bet-multipliers"><button class="btn" onclick="ct_multiplyBet(1)">x1</button><button class="btn" onclick="ct_multiplyBet(5)">x5</button><button class="btn" onclick="ct_multiplyBet(10)">x10</button><button class="btn" onclick="ct_multiplyBet(20)">x20</button><button class="btn" onclick="ct_multiplyBet(50)">x50</button><button class="btn" onclick="ct_multiplyBet(100)">x100</button></div>
+                <div class="ct-big-small-bet"><button class="btn" style="background-color: var(--accent-yellow);" onclick="ct_placeBet('size', 'Big')">Big</button><button class="btn" style="background-color: var(--accent-blue);" onclick="ct_placeBet('size', 'Small')">Small</button></div>
+                <div class="auto-toggle-container"><label class="switch"><input type="checkbox" id="ct_auto_toggle"><span class="slider round"></span></label><span>Enable Auto Play</span></div>
+                <div id="ct_auto_panel" style="display: none;"><div class="input-group"><label for="ct_auto_rounds">Number of Rounds</label><input type="number" id="ct_auto_rounds" value="10" min="1"></div><div class="input-group"><label for="ct_auto_strategy">Betting Strategy</label><select id="ct_auto_strategy"><option value="Green">Always Green</option><option value="Red">Always Red</option><option value="Violet">Always Violet</option><option value="Big">Always Big</option><option value="Small">Always Small</option><option value="random_color">Random Color (G/R/V)</option><option value="random_number">Random Number (0-9)</option></select></div><button id="ct_auto_action_btn" class="btn btn-green" style="width:100%; margin-bottom:15px;">Start Auto Play</button></div>
+                <div class="ct-history-tabs"><div class="tab active" data-tab="game_history">Game history</div><div class="tab" data-tab="my_history">My history</div><div class="tab" data-tab="all_bets_history">All Bets</div></div>
+                <div id="game_history" class="ct-history-content active"><div class="ct-history-table"><table><thead><tr><th>Period</th><th>Number</th><th>Size</th><th>Result</th></tr></thead><tbody id="ct_game_history_body"></tbody></table></div></div>
+                <div id="my_history" class="ct-history-content"><div class="ct-history-table"><table><thead><tr><th>Period</th><th>Select</th><th>Amount</th><th>Result</th></tr></thead><tbody id="ct_my_history_body"></tbody></table></div></div>
+                <div id="all_bets_history" class="ct-history-content"><div class="ct-history-table"><table><thead><tr><th>Email</th><th>Selection</th><th>Amount</th></tr></thead><tbody id="ct_all_bets_history_body"></tbody></table></div></div>
             </div>
         </div>
 
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
+        <!-- BOTTOM NAVIGATION BAR -->
+        <div class="bottom-nav">
             <a href="#" class="bottom-nav-item active" data-page="home-page">
-                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span class="nav-icon">🏠</span>
                 <span>Home</span>
             </a>
             <a href="#" class="bottom-nav-item" data-page="color-trading-page">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
-                <span>Win Go</span>
+                <span class="nav-icon">🎨</span>
+                <span class="game-name-text">Win Go 1Min</span>
+            </a>
+            <a href="#" class="bottom-nav-item" data-page="leaderboard-page">
+                <span class="nav-icon">🏆</span>
+                <span>Leaderboard</span>
             </a>
             <a href="#" class="bottom-nav-item" data-page="wallet-page">
-                <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                <span>Wallet</span>
+                <span class="nav-icon">💰</span>
+                <span>My Wallet</span>
             </a>
-        </nav>
-
-        <!-- 1. EXTRA FIRST DEPOSIT BONUS POPUP (Image 1 Style) -->
-        <div id="bonus-dialog-overlay" class="dialog-overlay">
-            <div class="bonus-dialog-box">
-                <button class="dialog-close-btn" id="close-bonus-dialog" style="color:#0f172a;">
-                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                </button>
-                <h3>Extra first deposit bonus</h3>
-                <p class="subtext">Each account can only receive rewards once</p>
-
-                <div class="bonus-card-list">
-                    <div class="bonus-card-item">
-                        <div class="bonus-card-top"><span class="dep-title">First deposit 400</span><span class="dep-val">+ ₹48.00</span></div>
-                        <div class="bonus-card-desc">Deposit 400 for the first time and you will receive 48 bonus</div>
-                        <div class="bonus-card-bottom"><span class="bonus-progress">0/400</span><button class="bonus-claim-btn" onclick="selectBonusAmount(400)">Deposit</button></div>
-                    </div>
-                    <div class="bonus-card-item">
-                        <div class="bonus-card-top"><span class="dep-title">First deposit 1000</span><span class="dep-val">+ ₹108.00</span></div>
-                        <div class="bonus-card-desc">Deposit 1000 for the first time and you will receive 108 bonus</div>
-                        <div class="bonus-card-bottom"><span class="bonus-progress">0/1000</span><button class="bonus-claim-btn" onclick="selectBonusAmount(1000)">Deposit</button></div>
-                    </div>
-                    <div class="bonus-card-item">
-                        <div class="bonus-card-top"><span class="dep-title">First deposit 2000</span><span class="dep-val">+ ₹188.00</span></div>
-                        <div class="bonus-card-desc">Deposit 2000 for the first time and you will receive 188 bonus</div>
-                        <div class="bonus-card-bottom"><span class="bonus-progress">0/2000</span><button class="bonus-claim-btn" onclick="selectBonusAmount(2000)">Deposit</button></div>
-                    </div>
-                    <div class="bonus-card-item">
-                        <div class="bonus-card-top"><span class="dep-title">First deposit 10000</span><span class="dep-val">+ ₹488.00</span></div>
-                        <div class="bonus-card-desc">Deposit 10000 for the first time and you will receive 488 bonus</div>
-                        <div class="bonus-card-bottom"><span class="bonus-progress">0/10000</span><button class="bonus-claim-btn" onclick="selectBonusAmount(10000)">Deposit</button></div>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- 2. TWO-STEP DEPOSIT DIALOG -->
+        <!-- DIALOGS -->
+        <div id="ct_dialog_overlay" class="ct-dialog-overlay">
+            <div class="ct-dialog win-dialog" style="display:none;">
+                <div class="ct-dialog-header"><div class="ct-icon-badge">🎉</div></div>
+                <div class="ct-dialog-content">
+                    <h2>Congratulations</h2>
+                    <div class="ct-lottery-results"><span>Lottery results:</span><span class="result-tag" id="ct_win_dialog_color"></span><span class="result-tag" id="ct_win_dialog_number"></span><span class="result-tag" id="ct_win_dialog_size"></span></div>
+                    <div class="ct-bonus-ticket"><p>You Won</p><h3 id="ct_win_dialog_bonus"></h3><p class="period-info">Period: <span class="game-name-text">Win Go 1Min</span> <span id="ct_win_dialog_period"></span></p></div>
+                </div><button class="dialog-close" onclick="ct_hideDialog()">×</button>
+            </div>
+            <div class="ct-dialog loss-dialog" style="display:none;">
+                <div class="ct-dialog-header"><div class="ct-icon-badge">😢</div></div>
+                <div class="ct-dialog-content">
+                    <h2>Better Luck Next Time!</h2>
+                    <div class="ct-lottery-results"><span>Lottery results:</span><span class="result-tag" id="ct_loss_dialog_color"></span><span class="result-tag" id="ct_loss_dialog_number"></span><span class="result-tag" id="ct_loss_dialog_size"></span></div>
+                    <div class="ct-bonus-ticket loss-ticket"><p>You Lost</p><h3 id="ct_loss_dialog_amount"></h3><p class="period-info">Period: <span class="game-name-text">Win Go 1Min</span> <span id="ct_loss_dialog_period"></span></p></div>
+                </div><button class="dialog-close" onclick="ct_hideDialog()">×</button>
+            </div>
+        </div>
+        
+        <!-- MANUAL DEPOSIT DIALOG -->
         <div id="deposit-dialog-overlay" class="dialog-overlay">
-            <div class="dialog-box">
-                <button class="dialog-close-btn" id="close-deposit-dialog">
-                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                </button>
+            <div class="dialog-box" style="max-height: 90vh; overflow-y: auto;">
+                <button id="close-deposit-dialog" class="dialog-close-btn">×</button>
                 <h2>Deposit Funds</h2>
-
-                <!-- STEP 1: AMOUNT SELECTION & TERMS -->
-                <div id="deposit-step-1">
-                    <div class="amount-selector">
-                        <button class="btn-amount active" data-amt="100">₹100</button>
-                        <button class="btn-amount" data-amt="500">₹500</button>
-                        <button class="btn-amount" data-amt="1000">₹1,000</button>
-                        <button class="btn-amount" data-amt="2000">₹2,000</button>
-                        <button class="btn-amount" data-amt="5000">₹5,000</button>
-                        <button class="btn-amount" data-amt="10000">₹10,000</button>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Custom Deposit Amount (₹)</label>
-                        <input type="number" id="deposit-amount-input" value="100" min="100">
-                    </div>
-
-                    <!-- Deposit Terms & Policy -->
-                    <div class="terms-box">
-                        <strong>Deposit Policy & Instructions:</strong>
-                        <ul>
-                            <li>Minimum deposit amount is <strong>₹100.00</strong>.</li>
-                            <li>Pay exact amount shown on next step to ensure automatic verification.</li>
-                            <li>Save the 12-digit UTR reference number from your UPI app.</li>
-                        </ul>
-                    </div>
-
-                    <button class="btn btn-green" id="confirm-deposit-step1-btn">Confirm & Generate QR</button>
+                <p class="dialog-instructions" id="deposit-instructions" style="margin-top:0;">Min: ₹100 | Max: ₹100000</p>
+                
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <p style="font-size: 0.85em; color: var(--text-secondary); margin-bottom: 6px;">Scan QR to Pay:</p>
+                    <img src="https://ibb.co/FqVNJbpP" alt="Payment QR" style="width: 170px; height: 170px; object-fit: contain; border-radius: 8px; border: 2px solid var(--accent-blue); background: #fff; padding: 4px;">
                 </div>
 
-                <!-- STEP 2: QR & PROOF SUBMISSION -->
-                <div id="deposit-step-2" style="display:none; text-align:center;">
-                    <p style="font-size:0.85em; color:var(--text-secondary); margin-bottom:8px;">Scan & Pay: <strong style="color:var(--accent-green); font-size:1.1em;" id="qr-display-amount">₹100.00</strong></p>
-                    
-                    <img src="https://ibb.co/FqVNJbpP" alt="UPI QR" style="width: 160px; height: 160px; object-fit: contain; border-radius: 10px; border: 2px solid var(--accent-blue); background:#fff; padding:4px; margin-bottom:12px;">
-
-                    <div class="input-group" style="text-align:left;">
-                        <label>12-Digit UTR / Transaction ID</label>
-                        <input type="text" id="deposit-utr-input" placeholder="e.g. 334512345678">
-                    </div>
-
-                    <div class="input-group" style="text-align:left;">
-                        <label>Payment Screenshot Proof</label>
-                        <input type="file" id="deposit-proof-file" accept="image/*">
-                    </div>
-
-                    <div style="display:flex; gap:10px; margin-top:14px;">
-                        <button class="btn btn-yellow" id="back-deposit-step1-btn" style="flex:1;">Back</button>
-                        <button class="btn btn-green" id="submit-deposit-final-btn" style="flex:2;">Submit Proof</button>
-                    </div>
+                <div class="amount-selector"><button class="btn-amount">₹100</button><button class="btn-amount">₹500</button><button class="btn-amount">₹1000</button><button class="btn-amount">₹5000</button></div>
+                
+                <div class="input-group">
+                    <label for="deposit-amount">Amount (₹)</label>
+                    <input type="number" id="deposit-amount" placeholder="Enter amount paid">
                 </div>
+
+                <div class="input-group">
+                    <label for="deposit-utr">12-Digit UTR / Transaction ID</label>
+                    <input type="text" id="deposit-utr" placeholder="e.g. 334512345678">
+                </div>
+
+                <div class="input-group">
+                    <label for="deposit-proof">Payment Screenshot</label>
+                    <input type="file" id="deposit-proof" accept="image/*">
+                </div>
+
+                <button id="submit-deposit-btn" class="btn btn-green" style="width: 100%;">Submit Request</button>
             </div>
         </div>
-
-        <!-- 3. WITHDRAW DIALOG (Image 2 Policy & Terms Included) -->
+        
         <div id="withdraw-dialog-overlay" class="dialog-overlay">
             <div class="dialog-box">
-                <button class="dialog-close-btn" id="close-withdraw-dialog">
-                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                </button>
+                <button id="close-withdraw-dialog" class="dialog-close-btn">×</button>
                 <h2>Withdraw Funds</h2>
-
-                <div class="amount-selector">
-                    <button class="btn-amount" data-wamt="100">100</button>
-                    <button class="btn-amount" data-wamt="5000">5K</button>
-                    <button class="btn-amount" data-wamt="10000">10K</button>
-                    <button class="btn-amount" data-wamt="15000">15K</button>
-                    <button class="btn-amount" data-wamt="20000">20K</button>
-                    <button class="btn-amount" data-wamt="50000">50K</button>
-                </div>
-
+                <p class="dialog-instructions" id="withdraw-instructions" style="margin-top:0;">Min: ₹100 | Max: ₹50000</p>
                 <div class="input-group">
-                    <label>UPI ID (e.g. mobile@upi)</label>
-                    <input type="text" id="withdraw-upi-input" placeholder="yourname@bank">
+                    <label for="withdraw-upi">UPI ID (e.g., PhonePe/GPay/PayTM)</label>
+                    <input type="text" id="withdraw-upi" placeholder="yourname@bank">
                 </div>
-
                 <div class="input-group">
-                    <label>Amount (₹)</label>
-                    <input type="number" id="withdraw-amount-input" placeholder="Enter amount">
+                    <label for="withdraw-amount">Amount (₹)</label>
+                    <input type="number" id="withdraw-amount" placeholder="Enter amount to withdraw">
                 </div>
-
-                <!-- Terms from Image 2 -->
-                <div class="terms-box">
-                    <ul>
-                        <li>Need to bet <strong style="color:var(--accent-red);">₹420.00</strong> to be able to withdraw.</li>
-                        <li>Current betting completed: <strong>₹<span id="user-total-bet-display">0.00</span></strong></li>
-                        <li>Withdrawal time: <strong>00:00 - 23:59</strong></li>
-                        <li>Inday remaining withdrawal times: <strong>3</strong></li>
-                        <li>Withdrawal amount range: <strong>₹100.00 - ₹50,000.00</strong></li>
-                        <li>Please verify your registered bank/UPI details carefully. Company will not be responsible for wrong entries.</li>
-                    </ul>
-                </div>
-
-                <button class="btn btn-primary" id="submit-withdraw-btn">Withdraw Request</button>
+                <p style="font-size: 0.9em; color: var(--text-secondary); margin-bottom: 20px; text-align: center;">Available: ₹<span id="withdraw-dialog-balance">0.00</span></p>
+                <button id="submit-withdraw-btn" class="btn btn-primary" style="width: 100%;">Submit Request</button>
             </div>
         </div>
-
-        <!-- 4. WINNING POPUP MODAL (Image 3 Style) -->
-        <div id="ct_dialog_overlay" class="dialog-overlay">
-            <div class="win-modal-card win-dialog" style="display:none;">
-                <div class="win-badge-wrapper">
-                    <div class="win-ribbon"></div>
-                    <div class="win-badge-circle">
-                        <svg viewBox="0 0 24 24"><path d="M12 2.5s4 3.5 4 8.5c0 3-1.5 5.5-4 7-2.5-1.5-4-4-4-7 0-5 4-8.5 4-8.5zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
-                    </div>
-                </div>
-
-                <h1 class="win-title-3d">Congratulations</h1>
-
-                <div class="win-results-row">
-                    <span>Lottery results</span>
-                    <span class="win-pill" id="ct_win_dialog_color">Red</span>
-                    <span class="win-pill" id="ct_win_dialog_number">8</span>
-                    <span class="win-pill" id="ct_win_dialog_size">Big</span>
-                </div>
-
-                <div class="win-slot-container">
-                    <div class="win-ticket-paper">
-                        <p class="bonus-label">Bonus</p>
-                        <h2 class="bonus-amount" id="ct_win_dialog_bonus">₹0.00</h2>
-                        <p style="margin:2px 0 0 0; font-size:0.8em; color:#16a34a; font-weight:700;">Period: WinGo 1 Min</p>
-                        <p style="margin:2px 0 0 0; font-size:0.9em; color:#15803d; font-weight:800;" id="ct_win_dialog_period">...</p>
-                    </div>
-                </div>
-
-                <div class="win-autoclose-bar" onclick="ct_hideDialog()">
-                    <span class="check-icon">✓</span>
-                    <span id="win_autoclose_text">3 seconds auto close</span>
-                </div>
-            </div>
-        </div>
+        
+        <div id="withdraw-confirm-dialog-overlay" class="dialog-overlay" style="z-index: 3001;"><div class="dialog-box"><h2>Confirm Withdrawal</h2><p class="dialog-confirm-details">You are about to withdraw <strong id="confirm-withdraw-amount"></strong> to the UPI ID <strong id="confirm-withdraw-upi"></strong>.<br>This action cannot be undone.</p><div class="dialog-actions"><button id="cancel-withdraw-confirmation" class="btn btn-red">Cancel</button><button id="confirm-withdraw-btn" class="btn btn-green">Confirm</button></div></div></div>
+        <div id="ct-confirm-dialog-overlay" class="dialog-overlay" style="z-index: 3001;"><div class="dialog-box"><h2>Confirm Bet</h2><p class="dialog-confirm-details">Are you sure you want to place a bet of <strong id="confirm-ct-bet-amount"></strong> on <strong id="confirm-ct-bet-selection"></strong>?</p><div class="dialog-actions"><button id="cancel-ct-confirmation" class="btn btn-red">Cancel</button><button id="confirm-ct-bet-btn" class="btn btn-green">Confirm Bet</button></div></div></div>
+        <div id="ct-how-to-play-overlay" class="dialog-overlay ct-how-to-play-overlay"><div class="dialog-box how-to-play-box"><button id="close-how-to-play-dialog" class="dialog-close-btn">×</button><h2>How to Play <span class="game-name-text">Win Go 1Min</span></h2><div class="dialog-content"><h3>Game Rules</h3><p>Every 1 minute, a new round starts. You have 55 seconds to place a bet on the outcome. The result is a number from 0 to 9.</p><h3>Betting Options & Payouts</h3><ul><li><strong>Colors (Green/Red):</strong> Bet on a color. If the result is the correct color, you get <strong>2x</strong> your bet. (e.g., bet ₹10, win ₹20).</li><li><strong>Violet:</strong> If the result is a number that is both Green/Red and Violet (0 or 5), and you bet on Violet, you get <strong>4.5x</strong> your bet.</li><li><strong>Numbers (0-9):</strong> Bet on a specific number. If you guess correctly, you get <strong>9x</strong> your bet.</li><li><strong>Size (Big/Small):</strong> Bet on whether the number will be Big (5-9) or Small (0-4). If correct, you get <strong>2x</strong> your bet.</li></ul><h3>Color & Size Chart</h3><ul><li><strong style="color:var(--accent-green)">Green:</strong> 1, 3, 7, 9</li><li><strong style="color:var(--accent-red)">Red:</strong> 2, 4, 6, 8</li><li><strong style="color:var(--accent-purple)">Violet:</strong> 0, 5</li><li><strong style="color:var(--accent-blue)">Small:</strong> 0, 1, 2, 3, 4</li><li><strong style="color:var(--accent-yellow)">Big:</strong> 5, 6, 7, 8, 9</li></ul><h3>Special Case Example</h3><p>The number 5 is Red and Violet. If you bet ₹10 on Red, you win ₹15 (1.5x). If you bet ₹10 on Violet, you win ₹45 (4.5x). If you bet on Big, you win ₹20 (2x).</p></div></div></div>
 
     </div>
 
 <script>
+    let minDepositLimit = 100, maxDepositLimit = 100000;
+    let minWithdrawLimit = 100, maxWithdrawLimit = 50000;
+
+    let isMuted = false;
+    const soundEffects = {
+        click: new Audio('https://cdn.pixabay.com/download/audio/2021/08/04/audio_bb630cc098.mp3'),
+        bet: new Audio('https://cdn.pixabay.com/download/audio/2022/03/07/audio_2747a32a2d.mp3'),
+        win: new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_2b68c40131.mp3'),
+        lose: new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_c970a047a2.mp3'),
+        tick: new Audio('https://cdn.pixabay.com/download/audio/2022/11/22/audio_2c8a3ce2b9.mp3')
+    };
+
+    function playSound(soundName) {
+        if (isMuted || !soundEffects[soundName]) return;
+        const sound = soundEffects[soundName];
+        sound.currentTime = 0;
+        sound.play().catch(e => {});
+    }
+
+    function stopSound(soundName) {
+        if (!soundEffects[soundName]) return;
+        const sound = soundEffects[soundName];
+        sound.pause();
+        sound.currentTime = 0;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const muteBtn = document.getElementById('mute-btn');
+        if (muteBtn) {
+            muteBtn.addEventListener('click', () => {
+                isMuted = !isMuted;
+                muteBtn.textContent = isMuted ? '🔇' : '🔊';
+                if (isMuted) { Object.keys(soundEffects).forEach(stopSound); }
+            });
+        }
+        document.querySelectorAll('.btn, .nav-link, .bottom-nav-item, .game-card, .ct-number-btn, .ct-history-tabs .tab, #copy-upi-btn').forEach(el => {
+            el.addEventListener('click', () => playSound('click'));
+        });
+    });
+
+    let activeGameLoop = null, activeInterval = null;
+    let currentUserUid = null;
+    let currentBalance = 0;
+    let db, auth;
+    let pendingCtBet = null;
+
+    let my_ct_historyListenerActive = false, ct_historyListenerActive = false, allBetsListenerActive = false;
+    let leaderboardListenerActive = false, promotionListenerActive = false, transactionListenerActive = false, balanceListenerActive = false;
+    let settingsListenerActive = false;
+
+    const pageTitleEl = document.getElementById("page-title");
+    const walletBalanceEl = document.getElementById("wallet_balance");
+    const transactionHistoryBody = document.getElementById("transaction_history_body");
+
+    // NEW FIREBASE CONFIGURATION UPDATED HERE
     const firebaseConfig = {
       apiKey: "AIzaSyAezPrNJpJE-4KZD_AuT_kON5VDmpTefbc",
       authDomain: "winx-c91df.firebaseapp.com",
@@ -655,357 +628,525 @@
     };
 
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-    const auth = firebase.auth();
-    const db = firebase.database();
+    auth = firebase.auth();
+    db = firebase.database();
 
-    let currentUserUid = null;
-    let currentBalance = 0;
-    let totalBetTurnover = 0;
-    const REQUIRED_BET_FOR_WITHDRAW = 420.0;
-
-    // Navigation & Sidebar
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('open');
-        document.getElementById('sidebar-overlay').classList.toggle('open');
+    function getFriendlyErrorMessage(error) {
+        switch (error.code) {
+            case 'auth/wrong-password': return 'Wrong password. Please try again.';
+            case 'auth/user-not-found': return 'No account found with this email.';
+            case 'auth/invalid-email': return 'Please enter a valid email address.';
+            case 'auth/email-already-in-use': return 'An account already exists with this email.';
+            case 'auth/weak-password': return 'Password should be at least 6 characters.';
+            case 'auth/too-many-requests': return 'Too many failed attempts. Please try again later.';
+            default: return error.message;
+        }
     }
+
+    function initializeDynamicSettings() {
+        if (settingsListenerActive) return;
+        settingsListenerActive = true;
+        db.ref('admin_controls/settings').on('value', snap => {
+            if (snap.exists()) {
+                const s = snap.val();
+                if (s.appName) {
+                    document.title = s.appName;
+                    const brandNameEl = document.getElementById('app-brand-name');
+                    if (brandNameEl) brandNameEl.textContent = s.appName;
+                }
+                if (s.gameImageUrl) document.getElementById('dynamic-game-img').src = s.gameImageUrl;
+                if (s.gameName) {
+                    document.getElementById('dynamic-game-name').textContent = s.gameName;
+                    document.getElementById('sidebar-game-name').textContent = s.gameName;
+                    document.querySelectorAll('.game-name-text').forEach(el => el.textContent = s.gameName);
+                }
+                if (s.logoUrl) {
+                    document.getElementById('dynamic-logo-top').src = s.logoUrl;
+                    document.getElementById('dynamic-logo-top').style.display = 'block';
+                    document.getElementById('dynamic-logo-sidebar').src = s.logoUrl;
+                    document.getElementById('dynamic-logo-sidebar').style.display = 'block';
+                } else {
+                    document.getElementById('dynamic-logo-top').style.display = 'none';
+                    document.getElementById('dynamic-logo-sidebar').style.display = 'none';
+                }
+                if (s.privacyPolicyUrl) {
+                    document.getElementById('login-privacy-link').href = s.privacyPolicyUrl;
+                    document.getElementById('signup-privacy-link').href = s.privacyPolicyUrl;
+                    document.getElementById('nav-privacy-link').href = s.privacyPolicyUrl;
+                    document.getElementById('nav-privacy-link').style.display = 'flex';
+                } else {
+                    document.getElementById('nav-privacy-link').style.display = 'none';
+                }
+                
+                if (s.minDeposit !== undefined) minDepositLimit = s.minDeposit;
+                if (s.maxDeposit !== undefined) maxDepositLimit = s.maxDeposit;
+                if (s.minWithdraw !== undefined) minWithdrawLimit = s.minWithdraw;
+                if (s.maxWithdraw !== undefined) maxWithdrawLimit = s.maxWithdraw;
+
+                const depositInstructions = document.getElementById('deposit-instructions');
+                if(depositInstructions) depositInstructions.textContent = `Min: ₹${minDepositLimit} | Max: ₹${maxDepositLimit}`;
+                
+                const withdrawInstructions = document.getElementById('withdraw-instructions');
+                if(withdrawInstructions) withdrawInstructions.textContent = `Min: ₹${minWithdrawLimit} | Max: ₹${maxWithdrawLimit}`;
+            }
+        });
+    }
+
+    async function updateBalance(amount, description) {
+        if (!currentUserUid) return { committed: false, newBalance: 0 };
+        const userRef = db.ref('users/' + currentUserUid);
+        const { committed, snapshot } = await userRef.child('balance').transaction(currentBal => {
+            if (amount < 0 && (currentBal || 0) < Math.abs(amount)) { return; }
+            return (currentBal || 0) + amount;
+        });
+        if (committed && description) {
+            const date = new Date();
+            const formattedDate = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            userRef.child('transactions').push({ description, amount, date: formattedDate, timestamp: firebase.database.ServerValue.TIMESTAMP });
+        }
+        return { committed, newBalance: snapshot.val() };
+    }
+    
+    function initializeUserData(uid) {
+        currentUserUid = uid;
+        const userRef = db.ref('users/' + uid);
+        userRef.once('value', snapshot => { if (!snapshot.exists()) { userRef.set({ balance: 0, email: firebase.auth().currentUser.email }); } });
+
+        if (!balanceListenerActive) {
+            balanceListenerActive = true;
+            userRef.child('balance').on('value', snapshot => {
+                currentBalance = snapshot.val() || 0;
+                const formattedBalance = currentBalance.toFixed(2);
+                if (walletBalanceEl) walletBalanceEl.textContent = formattedBalance;
+                document.querySelectorAll('.game-balance-value').forEach(el => { el.textContent = '₹' + formattedBalance; });
+                const withdrawDialogBalanceEl = document.getElementById('withdraw-dialog-balance');
+                if (withdrawDialogBalanceEl) { withdrawDialogBalanceEl.textContent = formattedBalance; }
+            });
+        }
+        
+        if (!transactionListenerActive) {
+            transactionListenerActive = true;
+            const transactionsRef = userRef.child('transactions').orderByChild('timestamp').limitToLast(20);
+            if (transactionHistoryBody) transactionHistoryBody.innerHTML = `<tr><td colspan="3"><div class="loader-small"></div></td></tr>`;
+            transactionsRef.on('value', snapshot => {
+                if (!transactionHistoryBody) return;
+                transactionHistoryBody.innerHTML = ""; let transactions = [];
+                snapshot.forEach(childSnapshot => { transactions.push(childSnapshot.val()); });
+                if (transactions.length === 0) { transactionHistoryBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: var(--text-secondary);">No transactions yet.</td></tr>'; return; }
+                transactions.reverse().forEach(tx => { transactionHistoryBody.innerHTML += `<tr><td>${tx.description}</td><td class="${tx.amount > 0 ? "tx-credit" : "tx-debit"}">${tx.amount > 0 ? "+" : ""}${tx.amount.toFixed(2)}</td><td>${tx.date || '...'}</td></tr>`; });
+            });
+        }
+
+        if (!my_ct_historyListenerActive) {
+            my_ct_historyListenerActive = true;
+            const myCtHistoryRef = userRef.child('my_ct_history').orderByChild('period').limitToLast(50);
+            myCtHistoryRef.on('value', snapshot => {
+                const myHistoryBody = document.getElementById('ct_my_history_body'); if (!myHistoryBody) return;
+                myHistoryBody.innerHTML = ''; let history = [];
+                snapshot.forEach(child => { history.push(child.val()); });
+                history.reverse().forEach(bet => {
+                    const resultText = bet.result === 'waiting' ? 'Waiting' : (bet.result > 0 ? `<span style="color:var(--accent-green)">+${bet.result.toFixed(2)}</span>` : `<span style="color:var(--accent-red)">${bet.result.toFixed(2)}</span>`);
+                    myHistoryBody.innerHTML += `<tr><td>${bet.period.slice(-4)}</td><td>${bet.value}</td><td>${bet.amount.toFixed(2)}</td><td class="result">${resultText}</td></tr>`;
+                });
+            });
+        }
+    }
+
+    function initializePromotionBanner() {
+        if (promotionListenerActive) return; promotionListenerActive = true;
+        const scrollerWrapper = document.getElementById('promo-scroller-wrapper'), scrollerInner = document.getElementById('promo-scroller-inner'), promoRef = db.ref('admin_controls/promotions');
+        promoRef.on('value', snapshot => {
+            if (!scrollerInner || !scrollerWrapper) return; scrollerInner.innerHTML = '';
+            if (snapshot.exists() && snapshot.numChildren() > 0) {
+                snapshot.forEach(childSnapshot => {
+                    const banner = childSnapshot.val();
+                    if (banner.bannerUrl && banner.linkUrl) {
+                        const bannerElement = document.createElement('a'); bannerElement.href = banner.linkUrl; bannerElement.target = '_blank'; bannerElement.rel = 'noopener noreferrer'; bannerElement.className = 'promo-scroller-item'; bannerElement.innerHTML = `<img src="${banner.bannerUrl}" alt="Promotion">`; scrollerInner.appendChild(bannerElement);
+                    }
+                });
+                scrollerWrapper.style.display = 'block';
+            } else { scrollerWrapper.style.display = 'none'; }
+        });
+    }
+
+    function detachFirebaseListeners() {
+        if (currentUserUid) { db.ref('users/' + currentUserUid).off(); balanceListenerActive = false; transactionListenerActive = false; my_ct_historyListenerActive = false; }
+        if (leaderboardListenerActive) { db.ref('users').off(); leaderboardListenerActive = false; }
+        if (promotionListenerActive) { db.ref('admin_controls/promotions').off(); promotionListenerActive = false; }
+        if (ct_historyListenerActive) { db.ref('ct_game_history').off(); ct_historyListenerActive = false; }
+        if (allBetsListenerActive) { db.ref('all_ct_bets').off(); allBetsListenerActive = false; }
+        currentUserUid = null;
+    }
+
+    function toggleSidebar() { playSound('click'); document.getElementById("sidebar").classList.toggle("open"); document.getElementById("sidebar-overlay").classList.toggle("open"); }
+    
+    document.querySelectorAll(".nav-link, .bottom-nav-item").forEach(e => e.addEventListener("click", t => { 
+        t.preventDefault(); 
+        const pageId = t.currentTarget.dataset.page; 
+        if(pageId) showPage(pageId); 
+    }));
+    
+    function stopAllGames() { if (window.ct_stopAutoPlay) ct_stopAutoPlay(); Object.keys(soundEffects).forEach(stopSound); }
 
     function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        const target = document.getElementById(pageId);
-        if (target) target.classList.add('active');
-
-        document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(el => {
-            el.classList.toggle('active', el.dataset.page === pageId);
+        stopAllGames();
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) { targetPage.classList.add("active"); }
+        
+        document.querySelectorAll(".nav-link").forEach(e => {
+            e.classList.toggle("active", e.dataset.page === pageId);
+        });
+        document.querySelectorAll(".bottom-nav-item").forEach(e => {
+            e.classList.toggle("active", e.dataset.page === pageId);
         });
 
-        if (document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
-        if (pageId === 'color-trading-page') startColorTradingGame();
+        if(document.getElementById("sidebar").classList.contains("open")){ toggleSidebar(); }
+
+        const navLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+        pageTitleEl.textContent = navLink ? navLink.textContent.trim().substring(1).trim() : "Home";
+        
+        switch (pageId) {
+            case "color-trading-page": startColorTradingGame(); break;
+            case "leaderboard-page": startLeaderboard(); break;
+        }
     }
-
-    document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const p = btn.dataset.page;
-            if (p) showPage(p);
-        });
-    });
-
-    // History Tabs Switcher
-    document.querySelectorAll('.history-tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.history-tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.history-tab-content').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(btn.dataset.tab).classList.add('active');
-        });
-    });
-
-    // User Data Initialization
+    
+    // Auth Listener
     auth.onAuthStateChanged(user => {
-        if (user) {
-            currentUserUid = user.uid;
-            document.getElementById('user-email-display').textContent = user.email;
-            attachUserListeners(user.uid);
+        const loaderOverlay = document.getElementById('loader-overlay');
+        if (loaderOverlay) { loaderOverlay.style.opacity = '0'; setTimeout(() => { loaderOverlay.style.display = 'none'; }, 500); }
+        const authContainer = document.getElementById('auth-container'), mainWrapper = document.querySelector('.main-wrapper');
+        initializeDynamicSettings(); 
+        
+        // Ensure user is signed in AND email is verified
+        if (user && user.emailVerified) {
+            authContainer.style.display = 'none'; 
+            mainWrapper.style.display = 'flex';
+            initializeUserData(user.uid);
+            initializeDepositDialog(); initializeWithdrawDialog(); initializeCtConfirmDialog(); initializeCtHowToPlayDialog(); initializePromotionBanner();
+            const emailDisplay = document.getElementById('user-email-display');
+            if (emailDisplay) { emailDisplay.textContent = user.email; emailDisplay.style.display = 'block'; }
         } else {
-            currentUserUid = null;
+            authContainer.style.display = 'flex'; 
+            mainWrapper.style.display = 'none'; 
+            detachFirebaseListeners();
+            if(document.getElementById("sidebar").classList.contains("open")){ toggleSidebar(); }
+            const emailDisplay = document.getElementById('user-email-display');
+            if (emailDisplay) { emailDisplay.style.display = 'none'; }
         }
     });
 
-    function attachUserListeners(uid) {
-        // Balance Listener
-        db.ref(`users/${uid}/balance`).on('value', snap => {
-            currentBalance = snap.val() || 0;
-            document.getElementById('wallet_balance').textContent = currentBalance.toFixed(2);
-        });
+    // Verification Navigation & Flow
+    let pendingVerificationUser = null;
 
-        // Deposit History Listener
-        db.ref(`deposit_requests/${uid}`).on('value', snap => {
-            const tbody = document.getElementById('deposit_history_tbody');
-            tbody.innerHTML = '';
-            if (!snap.exists()) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-secondary);">No deposit requests found.</td></tr>';
-                return;
-            }
-            snap.forEach(child => {
-                const req = child.val();
-                const row = tbody.insertRow(0);
-                row.insertCell(0).textContent = new Date(req.timestamp).toLocaleDateString();
-                row.insertCell(1).textContent = `₹${req.amount.toFixed(2)}`;
-                row.insertCell(2).textContent = req.utr || 'N/A';
-                const st = row.insertCell(3);
-                st.textContent = req.status.toUpperCase();
-                st.className = `badge-${req.status}`;
-            });
-        });
-
-        // Withdrawal History & Turnover Listener
-        db.ref(`withdraw_requests/${uid}`).on('value', snap => {
-            const tbody = document.getElementById('withdraw_history_tbody');
-            tbody.innerHTML = '';
-            if (!snap.exists()) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-secondary);">No withdrawals found.</td></tr>';
-                return;
-            }
-            snap.forEach(child => {
-                const req = child.val();
-                const row = tbody.insertRow(0);
-                row.insertCell(0).textContent = new Date(req.timestamp).toLocaleDateString();
-                row.insertCell(1).textContent = `₹${req.amount.toFixed(2)}`;
-                row.insertCell(2).textContent = req.upiNumber || 'N/A';
-                const st = row.insertCell(3);
-                st.textContent = req.status.toUpperCase();
-                st.className = `badge-${req.status}`;
-            });
-        });
-
-        // Track Bet Turnover for Policy
-        db.ref(`users/${uid}/my_ct_history`).on('value', snap => {
-            totalBetTurnover = 0;
-            if (snap.exists()) {
-                snap.forEach(b => { totalBetTurnover += (b.val().amount || 0); });
-            }
-            document.getElementById('user-total-bet-display').textContent = totalBetTurnover.toFixed(2);
-        });
+    function showAuthView(viewId) {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('signup-form').style.display = 'none';
+        document.getElementById('verify-form').style.display = 'none';
+        document.getElementById(viewId).style.display = 'block';
     }
 
-    // Modal Control Helpers
-    function openModal(id) { document.getElementById(id).classList.add('show'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-
-    // First Deposit Bonus Handlers
-    document.getElementById('open-bonus-btn').addEventListener('click', () => openModal('bonus-dialog-overlay'));
-    document.getElementById('close-bonus-dialog').addEventListener('click', () => closeModal('bonus-dialog-overlay'));
-
-    window.selectBonusAmount = function(amt) {
-        closeModal('bonus-dialog-overlay');
-        document.getElementById('deposit-amount-input').value = amt;
-        openModal('deposit-dialog-overlay');
-    };
-
-    // Deposit Flow Handlers
-    document.getElementById('open-deposit-modal-btn').addEventListener('click', () => {
-        document.getElementById('deposit-step-1').style.display = 'block';
-        document.getElementById('deposit-step-2').style.display = 'none';
-        openModal('deposit-dialog-overlay');
+    document.getElementById('show-signup').addEventListener('click', (e) => { 
+        e.preventDefault(); playSound('click'); showAuthView('signup-form'); 
     });
-    document.getElementById('close-deposit-dialog').addEventListener('click', () => closeModal('deposit-dialog-overlay'));
-
-    document.querySelectorAll('.btn-amount[data-amt]').forEach(b => {
-        b.addEventListener('click', () => {
-            document.querySelectorAll('.btn-amount[data-amt]').forEach(x => x.classList.remove('active'));
-            b.classList.add('active');
-            document.getElementById('deposit-amount-input').value = b.dataset.amt;
-        });
+    document.getElementById('show-login').addEventListener('click', (e) => { 
+        e.preventDefault(); playSound('click'); showAuthView('login-form'); 
     });
-
-    document.getElementById('confirm-deposit-step1-btn').addEventListener('click', () => {
-        const amt = parseFloat(document.getElementById('deposit-amount-input').value);
-        if (isNaN(amt) || amt < 100) {
-            alert('Minimum deposit is ₹100.00');
-            return;
-        }
-        document.getElementById('qr-display-amount').textContent = `₹${amt.toFixed(2)}`;
-        document.getElementById('deposit-step-1').style.display = 'none';
-        document.getElementById('deposit-step-2').style.display = 'block';
+    document.getElementById('back-to-login').addEventListener('click', (e) => { 
+        e.preventDefault(); playSound('click'); auth.signOut(); showAuthView('login-form'); 
     });
-
-    document.getElementById('back-deposit-step1-btn').addEventListener('click', () => {
-        document.getElementById('deposit-step-2').style.display = 'none';
-        document.getElementById('deposit-step-1').style.display = 'block';
-    });
-
-    document.getElementById('submit-deposit-final-btn').addEventListener('click', () => {
-        const amt = parseFloat(document.getElementById('deposit-amount-input').value);
-        const utr = document.getElementById('deposit-utr-input').value.trim();
-        const file = document.getElementById('deposit-proof-file').files[0];
-
-        if (!utr || utr.length < 6) {
-            alert('Please enter valid 12-digit UTR number.');
+    
+    // SIGNUP
+    document.getElementById('signup-btn').addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        const errorEl = document.getElementById('signup-error'); 
+        errorEl.style.display = 'none';
+        
+        if (!document.getElementById('signup-agree').checked) {
+            errorEl.textContent = 'You must agree to the Privacy Policy to sign up.';
+            errorEl.style.display = 'block';
             return;
         }
 
-        const btn = document.getElementById('submit-deposit-final-btn');
-        btn.disabled = true;
-        btn.textContent = 'Submitting...';
-
-        const saveRequest = (proofData = "") => {
-            db.ref(`deposit_requests/${currentUserUid}`).push({
-                amount: amt,
-                utr: utr,
-                screenshot: proofData,
-                status: 'pending',
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                userEmail: auth.currentUser.email
-            }).then(() => {
-                alert('Deposit request submitted! Once approved by admin, funds will be added.');
-                closeModal('deposit-dialog-overlay');
-                document.getElementById('deposit-utr-input').value = '';
-                document.getElementById('deposit-proof-file').value = '';
-            }).catch(e => alert(e.message))
-            .finally(() => {
-                btn.disabled = false;
-                btn.textContent = 'Submit Proof';
-            });
-        };
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => saveRequest(e.target.result);
-            reader.readAsDataURL(file);
-        } else {
-            saveRequest("");
+        const email = document.getElementById('signup-email').value; 
+        const password = document.getElementById('signup-password').value; 
+        
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(cred => {
+                pendingVerificationUser = cred.user;
+                return cred.user.sendEmailVerification();
+            })
+            .then(() => {
+                document.getElementById('verify-message').textContent = `Verification link sent to ${email}. Please check your email, verify it, then click below.`;
+                showAuthView('verify-form');
+            })
+            .catch((error) => { 
+                errorEl.textContent = getFriendlyErrorMessage(error); 
+                errorEl.style.display = 'block'; 
+            }); 
+    });
+    
+    // LOGIN
+    document.getElementById('login-btn').addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        const errorEl = document.getElementById('login-error'); 
+        errorEl.style.display = 'none';
+        
+        if (!document.getElementById('login-agree').checked) {
+            errorEl.textContent = 'You must agree to the Privacy Policy to log in.';
+            errorEl.style.display = 'block';
+            return;
         }
+
+        const email = document.getElementById('login-email').value; 
+        const password = document.getElementById('login-password').value; 
+        
+        auth.signInWithEmailAndPassword(email, password)
+            .then(cred => {
+                if (!cred.user.emailVerified) {
+                    pendingVerificationUser = cred.user;
+                    document.getElementById('verify-message').textContent = `Your email (${email}) is not verified yet. Please check your inbox and verify before continuing.`;
+                    showAuthView('verify-form');
+                }
+            })
+            .catch((error) => { 
+                errorEl.textContent = getFriendlyErrorMessage(error); 
+                errorEl.style.display = 'block'; 
+            }); 
     });
 
-    // Withdrawal Flow Handlers
-    document.getElementById('open-withdraw-modal-btn').addEventListener('click', () => openModal('withdraw-dialog-overlay'));
-    document.getElementById('close-withdraw-dialog').addEventListener('click', () => closeModal('withdraw-dialog-overlay'));
-
-    document.querySelectorAll('.btn-amount[data-wamt]').forEach(b => {
-        b.addEventListener('click', () => {
-            document.getElementById('withdraw-amount-input').value = b.dataset.wamt;
-        });
-    });
-
-    document.getElementById('submit-withdraw-btn').addEventListener('click', async () => {
-        const amt = parseFloat(document.getElementById('withdraw-amount-input').value);
-        const upi = document.getElementById('withdraw-upi-input').value.trim();
-
-        if (!upi.includes('@')) {
-            alert('Please enter a valid UPI ID (e.g. name@bank).');
+    // "I HAVE VERIFIED (CHECK & LOGIN)"
+    document.getElementById('check-verified-btn').addEventListener('click', async () => {
+        const verifyError = document.getElementById('verify-error');
+        verifyError.style.display = 'none';
+        
+        const user = auth.currentUser || pendingVerificationUser;
+        if (!user) {
+            showAuthView('login-form');
             return;
         }
-        if (isNaN(amt) || amt < 100 || amt > 50000) {
-            alert('Withdrawal amount must be between ₹100.00 and ₹50,000.00.');
-            return;
-        }
-        if (amt > currentBalance) {
-            alert('Insufficient balance.');
-            return;
-        }
-        // POLICY CHECK: Must bet ₹420 before withdrawal
-        if (totalBetTurnover < REQUIRED_BET_FOR_WITHDRAW) {
-            alert(`Withdrawal Locked! You need to bet at least ₹420.00 before withdrawing. Current: ₹${totalBetTurnover.toFixed(2)}`);
-            return;
-        }
-
-        const btn = document.getElementById('submit-withdraw-btn');
-        btn.disabled = true;
-        btn.textContent = 'Processing...';
 
         try {
-            // Deduct balance first
-            const balRef = db.ref(`users/${currentUserUid}/balance`);
-            const { committed } = await balRef.transaction(bal => (bal >= amt ? bal - amt : undefined));
-            if (!committed) throw new Error('Transaction failed. Low balance.');
-
-            await db.ref(`withdraw_requests/${currentUserUid}`).push({
-                amount: amt,
-                upiNumber: upi,
-                status: 'pending',
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                userEmail: auth.currentUser.email
-            });
-
-            alert('Withdrawal request submitted successfully!');
-            closeModal('withdraw-dialog-overlay');
-            document.getElementById('withdraw-amount-input').value = '';
-        } catch (err) {
-            alert(err.message);
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Withdraw Request';
-        }
-    });
-
-    // Win Go Game Engine & Auto-Close Winning Popup
-    let activeInterval = null;
-    let ct_periodId = "";
-    let winAutoCloseInterval = null;
-
-    function startColorTradingGame() {
-        const grid = document.getElementById('ct_number_grid');
-        if (!grid.dataset.init) {
-            grid.innerHTML = '';
-            for (let i = 0; i <= 9; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'ct-number-btn';
-                btn.innerHTML = `<img src="https://i.ibb.co/JWsTpKzy/file-00000000888c61f5b9918f5f0c5e441c.png" alt="${i}">`;
-                btn.onclick = () => ct_placeBet('number', i);
-                grid.appendChild(btn);
-            }
-            grid.dataset.init = "true";
-        }
-
-        clearInterval(activeInterval);
-        const d = new Date();
-        ct_periodId = `${d.getFullYear()}${(d.getMonth()+1).toString().padStart(2,"0")}${d.getDate().toString().padStart(2,"0")}${String(Math.floor(d.getUTCHours()*60+d.getUTCMinutes())).padStart(4,"0")}`;
-        document.getElementById('ct_period').textContent = ct_periodId;
-
-        let countdown = 60 - d.getSeconds();
-        activeInterval = setInterval(() => {
-            countdown--;
-            document.getElementById('ct_timer').textContent = `00:${countdown.toString().padStart(2,"0")}`;
-            if (countdown <= 0) {
-                clearInterval(activeInterval);
-                setTimeout(startColorTradingGame, 2000);
-            }
-        }, 1000);
-    }
-
-    window.ct_placeBet = function(type, val) {
-        const amt = parseFloat(document.getElementById('ct_bet_amount').value);
-        if (isNaN(amt) || amt <= 0 || amt > currentBalance) {
-            alert('Invalid bet amount or low balance.');
-            return;
-        }
-
-        db.ref(`users/${currentUserUid}/balance`).transaction(b => b - amt).then(() => {
-            db.ref(`users/${currentUserUid}/my_ct_history`).push({
-                period: ct_periodId,
-                type: type,
-                value: val,
-                amount: amt,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            alert(`Bet of ₹${amt} placed on ${val}!`);
-        });
-    };
-
-    function ct_showDialog(winData) {
-        const modal = document.querySelector('.win-modal-card');
-        document.getElementById('ct_win_dialog_color').textContent = winData.color;
-        document.getElementById('ct_win_dialog_number').textContent = winData.num;
-        document.getElementById('ct_win_dialog_size').textContent = winData.size;
-        document.getElementById('ct_win_dialog_bonus').textContent = `₹${winData.bonus.toFixed(2)}`;
-        document.getElementById('ct_win_dialog_period').textContent = winData.period;
-
-        modal.style.display = 'block';
-        openModal('ct_dialog_overlay');
-
-        let left = 3;
-        document.getElementById('win_autoclose_text').textContent = `${left} seconds auto close`;
-        clearInterval(winAutoCloseInterval);
-        winAutoCloseInterval = setInterval(() => {
-            left--;
-            if (left <= 0) {
-                clearInterval(winAutoCloseInterval);
-                ct_hideDialog();
+            await user.reload(); // Reload fresh status from Firebase
+            if (user.emailVerified) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.querySelector('.main-wrapper').style.display = 'flex';
+                initializeUserData(user.uid);
+                initializeDepositDialog(); initializeWithdrawDialog(); initializeCtConfirmDialog(); initializeCtHowToPlayDialog(); initializePromotionBanner();
             } else {
-                document.getElementById('win_autoclose_text').textContent = `${left} seconds auto close`;
+                verifyError.textContent = "Email is not verified yet! Please click the link in your email first.";
+                verifyError.style.display = 'block';
             }
-        }, 1000);
+        } catch (err) {
+            verifyError.textContent = err.message;
+            verifyError.style.display = 'block';
+        }
+    });
+
+    // RESEND VERIFICATION EMAIL
+    document.getElementById('resend-verify-btn').addEventListener('click', () => {
+        const verifyError = document.getElementById('verify-error');
+        const user = auth.currentUser || pendingVerificationUser;
+        if (user) {
+            user.sendEmailVerification()
+                .then(() => alert("A new verification link has been sent to your email!"))
+                .catch(err => {
+                    verifyError.textContent = err.message;
+                    verifyError.style.display = 'block';
+                });
+        }
+    });
+    
+    document.getElementById('logout-link').addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
+    
+    function initializeDepositDialog(){
+        const e = document.getElementById("deposit-btn"),
+              t = document.getElementById("deposit-dialog-overlay"),
+              n = document.getElementById("close-deposit-dialog"),
+              i = document.querySelectorAll("#deposit-dialog-overlay .btn-amount"),
+              l = document.getElementById("deposit-amount"),
+              utrInput = document.getElementById("deposit-utr"),
+              proofInput = document.getElementById("deposit-proof"),
+              a = document.getElementById("submit-deposit-btn");
+
+        function s(){ t.classList.add("show"); }
+        function c(){ 
+            t.classList.remove("show"); 
+            l.value = ""; 
+            if(utrInput) utrInput.value = "";
+            if(proofInput) proofInput.value = "";
+        }
+
+        e.addEventListener("click", s);
+        n.addEventListener("click", c);
+        t.addEventListener("click", ev => { ev.target === t && c(); });
+        i.forEach(btn => { btn.addEventListener("click", () => { l.value = btn.textContent.replace("₹", ""); }); });
+
+        a.addEventListener("click", () => {
+            const amt = parseFloat(l.value);
+            const utr = utrInput.value.trim();
+            const file = proofInput.files[0];
+
+            if (isNaN(amt) || amt < minDepositLimit || amt > maxDepositLimit) {
+                alert(`Amount must be between ₹${minDepositLimit} and ₹${maxDepositLimit}.`);
+                return;
+            }
+            if (!currentUserUid) {
+                alert("You must be logged in.");
+                return;
+            }
+            if (!utr || utr.length < 6) {
+                alert("Please enter a valid UTR / Reference number.");
+                return;
+            }
+
+            a.disabled = true;
+            a.textContent = "Submitting...";
+
+            const sendRequest = (screenshotData = "") => {
+                const requestData = {
+                    amount: amt,
+                    utr: utr,
+                    screenshot: screenshotData,
+                    status: "pending",
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    userEmail: auth.currentUser.email
+                };
+
+                db.ref(`deposit_requests/${currentUserUid}`).push(requestData)
+                    .then(() => {
+                        alert("Deposit request submitted successfully! Funds will be added after admin verification.");
+                        c();
+                    })
+                    .catch(err => {
+                        alert("Error submitting request: " + err.message);
+                    })
+                    .finally(() => {
+                        a.disabled = false;
+                        a.textContent = "Submit Request";
+                    });
+            };
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    sendRequest(event.target.result);
+                };
+                reader.onerror = function() {
+                    sendRequest("");
+                };
+                reader.readAsDataURL(file);
+            } else {
+                sendRequest("");
+            }
+        });
     }
 
-    window.ct_hideDialog = function() {
-        clearInterval(winAutoCloseInterval);
-        closeModal('ct_dialog_overlay');
-    };
+    function initializeWithdrawDialog(){
+        const e=document.getElementById("withdraw-btn"),
+              t=document.getElementById("withdraw-dialog-overlay"),
+              n=document.getElementById("close-withdraw-dialog"),
+              o=document.getElementById("submit-withdraw-btn"),
+              d=document.getElementById("withdraw-upi"),
+              i=document.getElementById("withdraw-amount"),
+              l=document.getElementById("withdraw-dialog-balance"),
+              r=document.getElementById("withdraw-confirm-dialog-overlay"),
+              a=document.getElementById("confirm-withdraw-amount"),
+              s=document.getElementById("confirm-withdraw-upi"),
+              c=document.getElementById("confirm-withdraw-btn"),
+              u=document.getElementById("cancel-withdraw-confirmation");
 
-    document.getElementById('logout-link').addEventListener('click', (e) => {
-        e.preventDefault();
-        auth.signOut().then(() => location.reload());
-    });
+        function m(){l.textContent=currentBalance.toFixed(2),t.classList.add("show")}
+        function p(){t.classList.remove("show"),d.value="",i.value=""}
+        function f(){r.classList.add("show")}
+        function g(){r.classList.remove("show")}
+
+        e.addEventListener("click",m);
+        n.addEventListener("click",p);
+        t.addEventListener("click",e=>{e.target===t&&p()});
+        u.addEventListener("click",g);
+
+        o.addEventListener("click",()=>{
+            const uval=d.value.trim(), tval=parseFloat(i.value);
+            if (!currentUserUid) {
+                alert("You must be logged in."); return;
+            }
+            if(uval.length<3||!uval.includes("@")){
+                alert("Please enter a valid UPI ID (e.g., yourname@bank)."); return;
+            }
+            if(isNaN(tval) || tval < minWithdrawLimit || tval > maxWithdrawLimit){
+                alert(`Amount must be between ₹${minWithdrawLimit} and ₹${maxWithdrawLimit}.`); return;
+            }
+            if(tval > currentBalance){
+                alert("Insufficient balance."); return;
+            }
+            
+            a.textContent=`₹${tval.toFixed(2)}`;
+            s.textContent=uval;
+            f();
+        });
+
+        c.addEventListener("click",async()=>{
+            const uval=d.value.trim(), tval=parseFloat(i.value);
+            c.disabled=!0; c.textContent="Processing...";
+            try {
+                const{committed:n}=await updateBalance(-tval,"Withdrawal Request");
+                if(!n)throw new Error("Transaction failed. Insufficient funds.");
+                await db.ref("withdraw_requests/"+currentUserUid).push().set({upiNumber:uval,amount:tval,status:"pending",timestamp:firebase.database.ServerValue.TIMESTAMP,userEmail:auth.currentUser.email});
+                alert("Withdrawal request submitted! The amount has been deducted from your balance.");
+                g(); p();
+            }catch(e){
+                alert(`An error occurred: ${e.message}`); g();
+            }finally{
+                c.disabled=!1; c.textContent="Confirm";
+            }
+        });
+    }
+
+    function initializeCtHowToPlayDialog(){const e=document.getElementById("ct-how-to-play-overlay"),t=document.getElementById("ct_how_to_play_btn"),n=document.getElementById("close-how-to-play-dialog");if(e&&t&&n){function o(){e.classList.add("show")}function d(){e.classList.remove("show")}t.addEventListener("click",o),n.addEventListener("click",d),e.addEventListener("click",e=>{e.target===e&&d()})}}
+
+    function startLeaderboard(){if(leaderboardListenerActive)return;const e=document.getElementById("leaderboard_body");e&&(leaderboardListenerActive=!0,e.innerHTML='<tr><td colspan="3"><div class="loader-small"></div></td></tr>',db.ref("users").orderByChild("balance").limitToLast(10).on("value",t=>{let n=[];t.forEach(e=>{const t=e.val();t.balance>0&&n.unshift({email:t.email,balance:t.balance})}),e.innerHTML="",0===n.length?e.innerHTML='<tr><td colspan="3" style="text-align:center; color: var(--text-secondary);">No players on the board yet.</td></tr>':n.forEach((t,n)=>{const o=n+1,d=t.email?t.email.replace(/^(...).*?(@.*)$/,"$1***$2"):"Anonymous",i=t.balance?t.balance.toFixed(2):"0.00";e.innerHTML+=`<tr><td>${o}</td><td>${d}</td><td>₹${i}</td></tr>`})},e=>{console.error("Error fetching leaderboard data:",e),e.innerHTML='<tr><td colspan="3" style="text-align:center; color: var(--text-red);">Error loading data.</td></tr>',leaderboardListenerActive=!1}))}
+    const ct_els={timer:document.getElementById("ct_timer"),period:document.getElementById("ct_period"),betAmountInput:document.getElementById("ct_bet_amount"),numberGrid:document.getElementById("ct_number_grid"),gameHistoryBody:document.getElementById("ct_game_history_body"),myHistoryBody:document.getElementById("ct_my_history_body"),tabs:document.querySelectorAll(".ct-history-tabs .tab"),historyContents:document.querySelectorAll(".ct-history-content"),dialogOverlay:document.getElementById("ct_dialog_overlay"),winDialog:document.querySelector("#ct_dialog_overlay .win-dialog"),lossDialog:document.querySelector("#ct_dialog_overlay .loss-dialog"),autoToggle:document.getElementById("ct_auto_toggle"),autoPanel:document.getElementById("ct_auto_panel"),autoRoundsInput:document.getElementById("ct_auto_rounds"),autoStrategySelect:document.getElementById("ct_auto_strategy"),autoActionBtn:document.getElementById("ct_auto_action_btn"),allBettingControls:document.querySelectorAll("#color-trading-page button, #color-trading-page input, #color-trading-page select")};function initializeCtConfirmDialog(){const e=document.getElementById("ct-confirm-dialog-overlay"),t=document.getElementById("confirm-ct-bet-btn"),n=document.getElementById("cancel-ct-confirmation");function o(){e.classList.remove("show"),pendingCtBet=null}n.addEventListener("click",o),e.addEventListener("click",e=>{e.target===e&&o()}),t.addEventListener("click",async()=>{pendingCtBet&&(t.disabled=!0,t.textContent="Processing...",await ct_executeBetTransaction(pendingCtBet.type,pendingCtBet.value,pendingCtBet.amount),t.disabled=!1,t.textContent="Confirm Bet",o())})}async function ct_executeBetTransaction(e,t,n){try{const{committed:o}=await updateBalance(-n,`CT Bet: ${t}`);if(!o)return alert("Bet failed due to insufficient funds."),!1;playSound('bet');const d={period:ct_periodId,type:e,value:t,amount:n,result:"waiting",timestamp:firebase.database.ServerValue.TIMESTAMP},i={email:auth.currentUser.email,selection:t,amount:n,timestamp:firebase.database.ServerValue.TIMESTAMP};return await Promise.all([db.ref(`users/${currentUserUid}/my_ct_history`).push(d),db.ref("all_ct_bets").push(i)]),!0}catch(e){return console.error("Betting Error:",e),alert(`Error placing bet: ${e.message}`),!1}}let ct_periodId,ct_countdown,ct_isRoundEnding=!1,ct_isAutoPlaying=!1,ct_autoRoundsLeft=0,ct_autoPlayTimeout=null;const ct_colorMap={0:"rv",1:"g",2:"r",3:"g",4:"r",5:"gv",6:"r",7:"g",8:"r",9:"g"};function ct_hideDialog(){ct_els.dialogOverlay.classList.remove("show"),ct_isRoundEnding=!1,startColorTradingGame()}function ct_showDialog(e,t){const n="win"===e?ct_els.winDialog:ct_els.lossDialog,o="loss"===e?ct_els.winDialog:ct_els.lossDialog;o.style.display="none",n.style.display="block";const d=t.winColors.find(e=>"Violet"!==e)||t.winColors[0];document.getElementById(`ct_${e}_dialog_color`).textContent=d,document.getElementById(`ct_${e}_dialog_number`).textContent=t.winNum,document.getElementById(`ct_${e}_dialog_size`).textContent=t.winSize,document.getElementById(`ct_${e}_dialog_period`).textContent=t.period.slice(-4),"win"===e?document.getElementById("ct_win_dialog_bonus").textContent=`+₹${t.netChange.toFixed(2)}`:document.getElementById("ct_loss_dialog_amount").textContent=`-₹${Math.abs(t.netChange).toFixed(2)}`,ct_els.dialogOverlay.classList.add("show")}function ct_placeBet(e,t){if(ct_countdown<=5||ct_isAutoPlaying||ct_isRoundEnding)return;playSound('click');const n=parseFloat(ct_els.betAmountInput.value);isNaN(n)||n<=0?alert("Please enter a valid bet amount."):n>currentBalance?alert("Insufficient balance."):(pendingCtBet={type:e,value:t,amount:n},document.getElementById("confirm-ct-bet-amount").textContent=`₹${n.toFixed(2)}`,document.getElementById("confirm-ct-bet-selection").textContent=t,document.getElementById("ct-confirm-dialog-overlay").classList.add("show"))}window.ct_stopAutoPlay=function(e){ct_isAutoPlaying&&(ct_isAutoPlaying=!1,clearTimeout(ct_autoPlayTimeout),ct_els.autoActionBtn.textContent="Start Auto Play",ct_els.autoActionBtn.className="btn btn-green",ct_els.allBettingControls.forEach(e=>{e.id==="ct_auto_action_btn"||e.id==="ct_auto_toggle"||e.closest("#ct_auto_panel")||(e.disabled=!1)}),e&&alert(e))};
+    function startColorTradingGame(){
+        if(ct_isRoundEnding)return;
+        if (!ct_els.numberGrid.dataset.initialized) {
+            ct_els.numberGrid.innerHTML = '';
+            const numberImageUrls = [ 'https://i.ibb.co/JWsTpKzy/file-00000000888c61f5b9918f5f0c5e441c.png', 'https://i.ibb.co/rG4V1V6x/file-00000000743c622f8a519067b7a6b01b.png', 'https://i.ibb.co/8LTg2N47/file-000000005a6062308b7e60f5c324a9d5.png', 'https://i.ibb.co/wFsHrRsg/file-00000000f4a861f7bd5e2241fbe89e1b.png', 'https://i.ibb.co/fdn9r4fW/file-000000007408622f82d0e1ccf9b10671.png', 'https://i.ibb.co/jc6z0y7/file-00000000efe46230882776e4c018472f.png', 'https://i.ibb.co/YYqL9k4/file-00000000f16861f8b7a2c3379a2662f1.png', 'https://i.ibb.co/99p2dXmV/file-0000000037a461f88abc1709c2401377.png', 'https://i.ibb.co/LzVwH4Xb/file-000000003fa061f88628919a9560b7f7.png', 'https://i.ibb.co/DgYwxN7r/file-00000000e8546230b05909132da85d93.png' ];
+            for (let e = 0; e <= 9; e++) {
+                const button = document.createElement("button"); button.className = "ct-number-btn";
+                const img = document.createElement('img'); img.src = numberImageUrls[e]; img.alt = `Number ${e}`; button.appendChild(img);
+                button.onclick = () => ct_placeBet("number", e); ct_els.numberGrid.appendChild(button);
+            }
+            ct_els.numberGrid.dataset.initialized = "true";
+        }
+        function e(){const e=ct_els.autoStrategySelect.value;let t="color",n="Green";switch(e){case"Red":n="Red";break;case"Violet":n="Violet";break;case"Big":t="size",n="Big";break;case"Small":t="size",n="Small";break;case"random_color":n=["Green","Red","Violet"][Math.floor(3*Math.random())];break;case"random_number":t="number",n=Math.floor(10*Math.random())}return{type:t,value:n}}async function t(){const t=parseFloat(ct_els.betAmountInput.value);if(currentBalance<t)return void ct_stopAutoPlay("Auto-play stopped: insufficient funds.");const{type:n,value:o}=e();await ct_executeBetTransaction(n,o,t)?(ct_autoRoundsLeft--,ct_isAutoPlaying&&(ct_els.autoActionBtn.textContent=`Running... (${ct_autoRoundsLeft} left)`)):ct_stopAutoPlay("Auto-play stopped: betting error.")}function n(){ct_countdown>15&&(ct_autoPlayTimeout=setTimeout(t,1e3*(ct_countdown-15)+5e3*Math.random()))}function o(){const e=parseInt(ct_els.autoRoundsInput.value),t=parseFloat(ct_els.betAmountInput.value);isNaN(e)||e<1?alert("Invalid number of rounds."):isNaN(t)||t<=0?alert("Invalid bet amount."):t>currentBalance?alert("Insufficient balance to start auto-play."):(ct_isAutoPlaying=!0,ct_autoRoundsLeft=e,ct_els.autoActionBtn.textContent=`Running... (${ct_autoRoundsLeft} left)`,ct_els.autoActionBtn.className="btn btn-red",ct_els.allBettingControls.forEach(e=>{"ct_auto_action_btn"===e.id||"ct_auto_toggle"===e.id||(e.disabled=!0)}),n())}ct_els.autoToggle.dataset.listenerAttached||(ct_els.autoToggle.addEventListener("change",()=>{ct_els.autoPanel.style.display=ct_els.autoToggle.checked?"block":"none",ct_els.autoToggle.checked||ct_stopAutoPlay()}),ct_els.autoActionBtn.addEventListener("click",()=>{ct_isAutoPlaying?ct_stopAutoPlay("Auto-play stopped by user."):o()}),ct_els.autoToggle.dataset.listenerAttached="true"),clearInterval(activeInterval),activeInterval=null;const d=new Date;ct_periodId=`${d.getFullYear()}${(d.getMonth()+1).toString().padStart(2,"0")}${d.getDate().toString().padStart(2,"0")}${String(Math.floor(d.getUTCHours()*60+d.getUTCMinutes())).padStart(4,"0")}`,ct_els.period.textContent=ct_periodId,ct_countdown=60-d.getSeconds(),ct_isRoundEnding=!1,activeInterval=setInterval(()=>{ct_countdown--;const e=(ct_countdown%60).toString().padStart(2,"0");ct_els.timer.textContent=`00:${e}`;const t=ct_countdown<=5||ct_isRoundEnding;ct_els.allBettingControls.forEach(e=>e.disabled=t||ct_isAutoPlaying),ct_els.timer.style.color=t?"var(--accent-red)":"white";if(ct_countdown<=10)playSound('tick');if(ct_countdown<=0){clearInterval(activeInterval),activeInterval=null,stopSound('tick'),ct_endRound()}},1e3),ct_isAutoPlaying&&(ct_autoRoundsLeft>0?n():ct_stopAutoPlay("Auto-play finished."));
+        if (!ct_historyListenerActive) {
+            ct_historyListenerActive = true;
+            db.ref('ct_game_history').orderByKey().limitToLast(20).on('value', snapshot => {
+                const historyBody = ct_els.gameHistoryBody; if (!historyBody) return; historyBody.innerHTML = ''; let games = [];
+                snapshot.forEach(child => { games.push(child.val()); });
+                games.reverse().forEach(game => {
+                    const resultCircles = game.winColors.map(c => `<span style="color:var(--accent-${"Green"===c?"green":"Red"===c?"red":"purple"}); font-size: 1.5em; line-height: 1;">●</span>`).join('');
+                    historyBody.innerHTML += `<tr><td>${game.period.slice(-4)}</td><td>${game.winNum}</td><td>${game.winSize}</td><td>${resultCircles}</td></tr>`;
+                });
+            });
+        }
+        if (!allBetsListenerActive) {
+            allBetsListenerActive = true;
+            const allBetsBody = document.getElementById('ct_all_bets_history_body');
+            if (allBetsBody) {
+                db.ref('all_ct_bets').orderByChild('timestamp').limitToLast(20).on('value', snapshot => {
+                    allBetsBody.innerHTML = ''; let bets = []; snapshot.forEach(child => { bets.push(child.val()); });
+                    bets.reverse().forEach(bet => { const maskedEmail = bet.email.replace(/^(...).*?(@.*)$/, "$1***$2"); allBetsBody.innerHTML += `<tr><td>${maskedEmail}</td><td>${bet.selection}</td><td>₹${bet.amount.toFixed(2)}</td></tr>`; });
+                });
+            }
+        }
+    }
+    
+    async function ct_endRound(){if(ct_isRoundEnding)return;ct_isRoundEnding=!0;const e=await db.ref("admin_controls/color_trading/next_result").once("value");let t=Math.floor(10*Math.random());if(e.exists()&&null!==e.val()){const a=e.val();if("object"==typeof a){let i=[0,1,2,3,4,5,6,7,8,9];"Big"===a.size&&(i=[5,6,7,8,9]),"Small"===a.size&&(i=[0,1,2,3,4]),"Green"===a.color&&(i=i.filter(e=>[1,3,5,7,9].includes(e))),"Red"===a.color&&(i=i.filter(e=>[0,2,4,6,8].includes(e))),"Violet"===a.color&&(i=i.filter(e=>[0,5].includes(e))),i.length>0&&(t=i[Math.floor(Math.random()*i.length)])}else t=parseInt(a);e.ref.remove()}const n=ct_colorMap[t].split("").map(e=>"g"===e?"Green":"r"===e?"Red":"Violet"),o=t>=5?"Big":"Small";await db.ref(`ct_game_history/${ct_periodId}`).set({period:ct_periodId,winNum:t,winSize:o,winColors:n});let d=0,i=!1,l=0;const r=await db.ref(`users/${currentUserUid}/my_ct_history`).orderByChild("period").equalTo(ct_periodId).once("value");if(r.exists()){i=!0;const a=[];r.forEach(e=>{const r=e.val();let s=!1,c=2;l+=r.amount,"color"===r.type?n.includes(r.value)&&(s=!0,"Violet"===r.value?c=4.5:n.includes("Violet")&&(c=1.5)):"number"===r.type?t==r.value&&(s=!0,c=9):"size"===r.type&&o===r.value&&(s=!0);let u=-r.amount;s&&(winnings=r.amount*c,u=winnings-r.amount,a.push(updateBalance(winnings,`CT Win: ${r.value}`))),d+=u,a.push(e.ref.child("result").set(u))}),await Promise.all(a),playSound(d>=0?"win":"lose")}i&&!ct_isAutoPlaying?ct_showDialog(d>=0?"win":"loss",{winNum:t,winColors:n,winSize:o,netChange:d>=0?d:l,period:ct_periodId}):(ct_isRoundEnding=!1,setTimeout(startColorTradingGame,3e3))}function ct_multiplyBet(e){if(ct_isAutoPlaying||ct_isRoundEnding)return;playSound('click');const t=parseFloat(ct_els.betAmountInput.value)||10;ct_els.betAmountInput.value=(t*e).toFixed(0)}
+    ct_els.tabs.forEach(e=>{e.addEventListener("click",()=>{ct_els.tabs.forEach(e=>e.classList.remove("active")),e.classList.add("active"),ct_els.historyContents.forEach(e=>e.classList.remove("active")),document.getElementById(e.dataset.tab).classList.add("active")})});
 </script>
 </body>
 </html>
+
