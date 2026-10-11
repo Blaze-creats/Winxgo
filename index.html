@@ -616,15 +616,17 @@
     const walletBalanceEl = document.getElementById("wallet_balance");
     const transactionHistoryBody = document.getElementById("transaction_history_body");
 
+    // NEW FIREBASE CONFIGURATION UPDATED HERE
     const firebaseConfig = {
-      apiKey: "AIzaSyAeXlLArows7nDIS09gDMD2GbBtODr5iNA",
-      authDomain: "wingo3d-3ed55.firebaseapp.com",
-      databaseURL: "https://wingo3d-3ed55-default-rtdb.firebaseio.com",
-      projectId: "wingo3d-3ed55",
-      storageBucket: "wingo3d-3ed55.firebasestorage.app",
-      messagingSenderId: "686179751869",
-      appId: "1:686179751869:web:bb6bc7a86b5411580e24d4"
+      apiKey: "AIzaSyAezPrNJpJE-4KZD_AuT_kON5VDmpTefbc",
+      authDomain: "winx-c91df.firebaseapp.com",
+      databaseURL: "https://winx-c91df-default-rtdb.firebaseio.com",
+      projectId: "winx-c91df",
+      storageBucket: "winx-c91df.firebasestorage.app",
+      messagingSenderId: "385588479622",
+      appId: "1:385588479622:web:0f04164741e7ca03a33307"
     };
+
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     auth = firebase.auth();
     db = firebase.database();
@@ -928,7 +930,6 @@
         try {
             await user.reload(); // Reload fresh status from Firebase
             if (user.emailVerified) {
-                // Verified! Let auth.onAuthStateChanged take over
                 document.getElementById('auth-container').style.display = 'none';
                 document.querySelector('.main-wrapper').style.display = 'flex';
                 initializeUserData(user.uid);
