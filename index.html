@@ -26,6 +26,8 @@
             --accent-yellow: #d29922;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
             font-family: 'Roboto', 'Inter', sans-serif;
             background-color: var(--bg-dark);
@@ -35,8 +37,7 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding-top: 10px;
-            padding-bottom: 10px;
+            padding: 10px 0;
         }
 
         .main-wrapper {
@@ -52,13 +53,31 @@
             position: relative;
         }
 
+        /* Auth Container (Login / Signup) */
+        #auth-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-dark); z-index: 9999;
+            display: flex; justify-content: center; align-items: center; padding: 15px;
+        }
+        #auth-box {
+            width: 100%; max-width: 380px; padding: 25px;
+            background-color: var(--bg-primary); border: 1px solid var(--border-color);
+            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #auth-box h2 { text-align: center; margin-top: 0; margin-bottom: 20px; }
+        .auth-error {
+            color: var(--accent-red); background-color: rgba(248, 81, 73, 0.1);
+            border: 1px solid var(--accent-red); border-radius: 6px; padding: 10px;
+            margin-bottom: 15px; font-size: 0.85em; text-align: center; display: none;
+        }
+        .auth-toggle-text { text-align: center; font-size: 0.9em; margin-top: 20px; color: var(--text-secondary); }
+        .auth-toggle-text a { color: var(--accent-blue); text-decoration: none; font-weight: 600; cursor: pointer; }
+
+        /* Top Bar */
         .top-bar {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
+            display: flex; align-items: center; padding: 10px 15px;
             background: linear-gradient(270deg, #ff416c, #ff4b2b, #1cb5e0, #000851);
-            background-size: 800% 800%;
-            animation: gradientBG 12s ease infinite;
+            background-size: 800% 800%; animation: gradientBG 12s ease infinite;
             border-bottom: 1px solid var(--border-color);
         }
         @keyframes gradientBG {
@@ -66,30 +85,15 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
         .menu-btn {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.6em;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: none; border: none; color: var(--text-primary);
+            font-size: 1.6em; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
-        .top-bar h1 {
-            font-size: 1.15em;
-            margin: 0 auto;
-            color: #fff;
-            font-weight: 700;
-        }
+        .top-bar h1 { font-size: 1.15em; margin: 0 auto; color: #fff; font-weight: 700; }
 
         .page {
-            display: none;
-            padding: 15px;
-            padding-bottom: 75px;
-            flex-grow: 1;
-            overflow-y: auto;
+            display: none; padding: 15px; padding-bottom: 75px;
+            flex-grow: 1; overflow-y: auto;
         }
         .page.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -117,7 +121,7 @@
         }
         .sidebar-overlay.open { opacity: 1; visibility: visible; }
 
-        /* Buttons & Forms */
+        /* General Buttons & Inputs */
         .btn {
             padding: 10px 15px; border: none; border-radius: 8px; font-size: 1em;
             font-weight: 600; cursor: pointer; transition: all 0.2s;
@@ -150,7 +154,7 @@
         .bottom-nav-item.active { color: var(--accent-blue); font-weight: bold; }
         .bottom-nav-item svg { width: 20px; height: 20px; fill: currentColor; }
 
-        /* Wallet */
+        /* Wallet & History */
         .wallet-summary {
             background-color: var(--bg-secondary); padding: 20px; border-radius: 10px;
             text-align: center; margin-bottom: 20px; border: 1px solid var(--border-color);
@@ -184,7 +188,6 @@
         .ct-main-bets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .ct-main-bets .btn { padding: 15px 0; font-size: 1.1em; font-weight: 700; text-transform: uppercase; }
 
-        /* 0-9 Original Number Grid */
         .ct-number-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
         .ct-number-btn {
             aspect-ratio: 1/1; border-radius: 50%; border: none; display: flex;
@@ -199,7 +202,6 @@
         .ct-big-small-bet { display: flex; gap: 10px; margin-bottom: 20px; }
         .ct-big-small-bet .btn { flex: 1; padding: 15px 0; font-size: 1.1em; font-weight: 700; text-transform: uppercase; }
 
-        /* Auto-Bet Styles */
         .auto-toggle-container { display: flex; align-items: center; gap: 10px; margin: 15px 0 10px 0; background: var(--bg-dark); padding: 10px; border-radius: 8px; }
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -210,7 +212,6 @@
         .slider.round { border-radius: 34px; } .slider.round:before { border-radius: 50%; }
         #ct_auto_panel { background-color: var(--bg-dark); padding: 10px 15px 1px 15px; border-radius: 8px; margin-bottom: 15px; }
 
-        /* Tabs */
         .ct-history-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 10px; }
         .ct-history-tabs .tab { padding: 10px 15px; cursor: pointer; color: var(--text-secondary); }
         .ct-history-tabs .tab.active { color: var(--accent-blue); font-weight: 700; border-bottom: 2px solid var(--accent-blue); }
@@ -219,18 +220,16 @@
         .ct-history-table table { width: 100%; text-align: center; }
         .ct-history-table th, .ct-history-table td { padding: 8px 5px; font-size: .9em; }
 
-        /* Dialogs */
+        /* Dialogs / Modals */
         .dialog-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 15px; }
         .dialog-overlay.show { display: flex; animation: fadeIn 0.3s; }
         .dialog-box { background: var(--bg-secondary); color: var(--text-primary); border-radius: 12px; width: 100%; max-width: 380px; padding: 20px; position: relative; border: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto; }
         .dialog-close-btn { position: absolute; top: 8px; right: 12px; background: none; border: none; color: var(--text-secondary); font-size: 1.8em; cursor: pointer; }
 
-        /* Amount Presets Grid */
         .amount-selector { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
         .btn-amount { flex: 1 1 28%; padding: 10px 4px; font-size: 0.9em; background-color: var(--bg-dark); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; text-align: center; font-weight: 600; }
         .btn-amount:hover, .btn-amount.active { background-color: var(--accent-blue); color: #000; border-color: var(--accent-blue); }
 
-        /* Terms & Policy Box */
         .terms-box {
             background-color: rgba(210, 153, 34, 0.1); border: 1px solid rgba(210, 153, 34, 0.3);
             border-radius: 8px; padding: 12px; font-size: 0.82em; color: #cbd5e1; line-height: 1.5; margin: 12px 0;
@@ -239,11 +238,105 @@
         .terms-box li { margin-bottom: 4px; }
         .terms-box strong { color: var(--accent-yellow); }
 
-        /* First Deposit Bonus Modal (Image 1 Style) */
-        .bonus-dialog-box { background: #ffffff; color: #1e293b; border-radius: 16px; padding: 18px 14px; max-width: 360px; }
-        .bonus-card-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-bottom: 8px; }
-        .bonus-card-top { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.88em; }
-        .bonus-claim-btn { background: #fff; border: 1px solid #ea580c; color: #ea580c; padding: 4px 14px; border-radius: 16px; font-size: 0.78em; font-weight: 700; cursor: pointer; }
+        /* BET CONFIRMATION OVERLAY (Exact Photo 1 Style) */
+        .bet-confirm-modal {
+            background: #ffffff; color: #1e293b; border-radius: 16px; width: 100%; max-width: 350px;
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: 'Inter', sans-serif;
+        }
+        .bet-confirm-header {
+            padding: 12px 16px; text-align: center; color: #fff; transition: background 0.3s;
+        }
+        .bet-confirm-header .game-name { font-size: 0.85em; opacity: 0.9; margin: 0; font-weight: 500; }
+        .bet-confirm-header .select-badge {
+            background: #ffffff; color: #000; display: inline-block; padding: 4px 20px;
+            border-radius: 8px; font-weight: 700; margin-top: 6px; font-size: 0.95em;
+        }
+        .bet-confirm-body { padding: 18px 16px; }
+        .bet-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .bet-row label { font-size: 0.9em; font-weight: 600; color: #334155; }
+        .bet-chip-group { display: flex; gap: 6px; }
+        .bet-chip {
+            padding: 6px 12px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px;
+            font-size: 0.85em; font-weight: 600; color: #475569; cursor: pointer;
+        }
+        .bet-chip.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+
+        .qty-control { display: flex; align-items: center; gap: 6px; }
+        .qty-btn {
+            width: 32px; height: 32px; background: var(--accent-blue); color: #fff; border: none;
+            border-radius: 6px; font-size: 1.2em; font-weight: bold; cursor: pointer;
+        }
+        .qty-val {
+            width: 50px; height: 32px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; font-weight: 700;
+        }
+        .multiplier-group { display: flex; gap: 4px; margin-bottom: 16px; }
+        .mult-chip {
+            flex: 1; padding: 6px 0; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px;
+            font-size: 0.8em; font-weight: 600; text-align: center; cursor: pointer; color: #475569;
+        }
+        .mult-chip.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+
+        .rules-checkbox { display: flex; align-items: center; gap: 6px; font-size: 0.8em; color: #64748b; margin-bottom: 16px; }
+        .rules-checkbox input { accent-color: var(--accent-yellow); }
+        .rules-checkbox span { color: #f43f5e; }
+
+        .bet-confirm-footer { display: flex; border-top: 1px solid #e2e8f0; }
+        .btn-cancel-bet {
+            flex: 1; padding: 14px; background: #f8fafc; border: none; font-weight: 600;
+            color: #64748b; cursor: pointer; font-size: 0.9em;
+        }
+        .btn-submit-bet {
+            flex: 2; padding: 14px; background: var(--accent-blue); border: none; font-weight: 700;
+            color: #fff; cursor: pointer; font-size: 0.95em;
+        }
+
+        /* PROMOTION / AGENCY PAGE (Exact Photo 2 Style) */
+        .agency-page-container {
+            background: #f8fafc; color: #1e293b; border-radius: 12px; margin: -15px; padding-bottom: 20px;
+        }
+        .agency-header-card {
+            background: linear-gradient(180deg, #facc15 0%, #eab308 100%);
+            padding: 24px 16px 20px 16px; text-align: center; color: #fff;
+            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+        }
+        .agency-header-card .comm-val { font-size: 2.8em; font-weight: 800; margin: 0; }
+        .agency-header-card .comm-badge {
+            background: rgba(255,255,255,0.25); display: inline-block; padding: 4px 16px;
+            border-radius: 20px; font-size: 0.8em; font-weight: 600; margin-top: 4px;
+        }
+        .agency-subtext { font-size: 0.72em; opacity: 0.9; margin: 6px 0 0 0; }
+
+        .subordinates-table {
+            background: #ffffff; margin: 14px 16px; border-radius: 12px; padding: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        }
+        .sub-col { text-align: center; font-size: 0.75em; color: #64748b; line-height: 1.4; }
+        .sub-col strong { display: block; font-size: 1.15em; color: #0f172a; margin-top: 2px; }
+        .sub-col .highlight { color: #10b981; }
+
+        .btn-invitation-link {
+            display: block; width: calc(100% - 32px); margin: 0 16px 14px 16px;
+            background: linear-gradient(90deg, #facc15, #eab308); color: #fff; text-align: center;
+            padding: 12px; border-radius: 25px; font-weight: 800; border: none; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(234, 179, 8, 0.4); text-transform: uppercase; font-size: 0.9em;
+        }
+
+        .agency-menu-list {
+            background: #ffffff; margin: 0 16px 14px 16px; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .agency-menu-item {
+            display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9; font-size: 0.88em; font-weight: 600; color: #334155;
+            cursor: pointer;
+        }
+        .agency-menu-item:last-child { border-bottom: none; }
+        .agency-menu-item .left { display: flex; align-items: center; gap: 10px; }
+        .copy-code-tag {
+            background: #f1f5f9; padding: 2px 8px; border-radius: 6px; font-family: monospace;
+            font-size: 0.9em; color: #64748b;
+        }
 
         /* Exact Win Dialog (Image 3 Style) */
         .win-modal-card {
@@ -281,18 +374,67 @@
 </head>
 <body>
 
-    <div class="main-wrapper">
+    <!-- AUTHENTICATION CONTAINER (LOGIN / SIGNUP) -->
+    <div id="auth-container">
+        <div id="auth-box">
+            <!-- LOGIN FORM -->
+            <div id="login-form">
+                <h2>User Login</h2>
+                <p class="auth-error" id="login-error"></p>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="login-email" required placeholder="name@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••">
+                </div>
+                <button id="login-btn" class="btn btn-primary" style="width: 100%;">Login</button>
+                <p class="auth-toggle-text">Don't have an account? <a id="show-signup">Sign Up</a></p>
+            </div>
+
+            <!-- SIGNUP FORM -->
+            <div id="signup-form" style="display: none;">
+                <h2>Create Account</h2>
+                <p class="auth-error" id="signup-error"></p>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="signup-email" required placeholder="name@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Password (min. 6 characters)</label>
+                    <input type="password" id="signup-password" required placeholder="••••••••">
+                </div>
+                <button id="signup-btn" class="btn btn-green" style="width: 100%;">Sign Up</button>
+                <p class="auth-toggle-text">Already have an account? <a id="show-login">Login</a></p>
+            </div>
+
+            <!-- EMAIL VERIFY SCREEN -->
+            <div id="verify-form" style="display: none; text-align: center;">
+                <h2>Verify Your Email</h2>
+                <p style="font-size: 0.88em; color: var(--text-secondary); line-height: 1.5; margin-bottom: 15px;" id="verify-message">
+                    Please click the verification link sent to your email, then verify below.
+                </p>
+                <p class="auth-error" id="verify-error"></p>
+                <button id="check-verified-btn" class="btn btn-green" style="width: 100%; margin-bottom: 10px;">I have verified (Check & Login)</button>
+                <button id="resend-verify-btn" class="btn btn-primary" style="width: 100%; margin-bottom: 15px;">Resend Email</button>
+                <p class="auth-toggle-text"><a id="back-to-login">← Back to Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div class="main-wrapper" id="main-wrapper" style="display: none;">
         <header class="top-bar">
             <button class="menu-btn" onclick="toggleSidebar()">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
             </button>
             <h1 id="page-title">Home</h1>
-            <!-- First Deposit Bonus Icon -->
             <button class="menu-btn" id="open-bonus-btn" title="First Deposit Bonus" style="margin-left: auto; margin-right: 10px;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="#fbbf24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             </button>
             <button id="mute-btn" class="menu-btn">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
             </button>
         </header>
 
@@ -304,9 +446,10 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="nav-link active" data-page="home-page">Home</a>
-                <a href="#" class="nav-link" data-page="wallet-page">My Wallet</a>
-                <a href="#" class="nav-link" data-page="leaderboard-page">Leaderboard</a>
                 <a href="#" class="nav-link" data-page="color-trading-page">Win Go 1Min</a>
+                <a href="#" class="nav-link" data-page="leaderboard-page">Leaderboard</a>
+                <a href="#" class="nav-link" data-page="wallet-page">My Wallet</a>
+                <a href="#" class="nav-link" data-page="promotion-page">Promotion (Agency)</a>
                 <a href="#" id="logout-link" style="margin-top: auto; color: var(--accent-red);">Logout</a>
             </nav>
         </aside>
@@ -314,7 +457,6 @@
 
         <!-- 1. HOME PAGE -->
         <div id="home-page" class="page active">
-            <div id="promo-scroller-wrapper" style="overflow-x: auto; margin-bottom: 20px; display: none;"><div id="promo-scroller-inner" style="display: flex; gap: 10px;"></div></div>
             <h3 style="margin-top: 0;">Popular Games</h3>
             <div class="game-card" style="background:var(--bg-secondary); border-radius:10px; overflow:hidden; border:1px solid var(--border-color); cursor:pointer;" onclick="showPage('color-trading-page')">
                 <div style="width:100%; aspect-ratio:16/9; background:#000;">
@@ -373,7 +515,11 @@
                 </div>
 
                 <div class="input-group"><input type="number" id="ct_bet_amount" placeholder="Enter bet amount" value="10"></div>
-                <div class="ct-main-bets"><button class="btn btn-green" onclick="ct_placeBet('color', 'Green')">Green</button><button class="btn btn-red" onclick="ct_placeBet('color', 'Red')">Red</button><button class="btn" style="background-color: var(--accent-purple); color:#fff;" onclick="ct_placeBet('color', 'Violet')">Violet</button></div>
+                <div class="ct-main-bets">
+                    <button class="btn btn-green" onclick="openBetConfirm('color', 'Green')">Green</button>
+                    <button class="btn btn-red" onclick="openBetConfirm('color', 'Red')">Red</button>
+                    <button class="btn" style="background-color: var(--accent-purple); color:#fff;" onclick="openBetConfirm('color', 'Violet')">Violet</button>
+                </div>
                 
                 <!-- 0-9 Original Number Buttons -->
                 <div class="ct-number-grid" id="ct_number_grid"></div>
@@ -389,8 +535,8 @@
                 </div>
 
                 <div class="ct-big-small-bet">
-                    <button class="btn" style="background-color: var(--accent-yellow); color:#000;" onclick="ct_placeBet('size', 'Big')">Big (5-9)</button>
-                    <button class="btn" style="background-color: var(--accent-blue); color:#fff;" onclick="ct_placeBet('size', 'Small')">Small (0-4)</button>
+                    <button class="btn" style="background-color: var(--accent-yellow); color:#000;" onclick="openBetConfirm('size', 'Big')">Big (5-9)</button>
+                    <button class="btn" style="background-color: var(--accent-blue); color:#fff;" onclick="openBetConfirm('size', 'Small')">Small (0-4)</button>
                 </div>
 
                 <!-- Auto-bet Controls -->
@@ -415,6 +561,71 @@
             </div>
         </div>
 
+        <!-- 5. PROMOTION / AGENCY PAGE (Photo 2 Exact Style) -->
+        <div id="promotion-page" class="page">
+            <div class="agency-page-container">
+                <div class="agency-header-card">
+                    <div class="comm-val">0</div>
+                    <div class="comm-badge">Yesterday's total commission</div>
+                    <p class="agency-subtext">Upgrade the level to increase commission income</p>
+                </div>
+
+                <div class="subordinates-table">
+                    <div class="sub-col">
+                        Direct subordinates
+                        <strong>0</strong>
+                        Number of register
+                        <strong class="highlight">0</strong>
+                        Deposit number
+                        <strong>0</strong>
+                        Deposit amount
+                        <strong>0</strong>
+                        First deposit count
+                    </div>
+                    <div class="sub-col" style="border-left: 1px solid #f1f5f9;">
+                        Team subordinates
+                        <strong>0</strong>
+                        Number of register
+                        <strong class="highlight">0</strong>
+                        Deposit number
+                        <strong>0</strong>
+                        Deposit amount
+                        <strong>0</strong>
+                        First deposit count
+                    </div>
+                </div>
+
+                <button class="btn-invitation-link" id="copy-invite-link-btn">INVITATION LINK</button>
+
+                <div class="agency-menu-list">
+                    <div class="agency-menu-item">
+                        <div class="left"><span>👥</span> Partner rewards</div>
+                        <span>›</span>
+                    </div>
+                    <div class="agency-menu-item" id="copy-invite-code-btn">
+                        <div class="left"><span>📋</span> Copy invitation code</div>
+                        <div><span class="copy-code-tag" id="invite-code-display">854757360636</span> <span>📄</span></div>
+                    </div>
+                    <div class="agency-menu-item">
+                        <div class="left"><span>📊</span> Subordinate data</div>
+                        <span>›</span>
+                    </div>
+                    <div class="agency-menu-item">
+                        <div class="left"><span>💰</span> Commission detail</div>
+                        <span>›</span>
+                    </div>
+                    <div class="agency-menu-item">
+                        <div class="left"><span>📜</span> Invitation rules</div>
+                        <span>›</span>
+                    </div>
+                    <div class="agency-menu-item">
+                        <div class="left"><span>🎧</span> Agent line customer service</div>
+                        <span>›</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- BOTTOM NAVIGATION -->
         <nav class="bottom-nav">
             <a href="#" class="bottom-nav-item active" data-page="home-page">
@@ -425,6 +636,10 @@
                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
                 <span>Win Go 1Min</span>
             </a>
+            <a href="#" class="bottom-nav-item" data-page="promotion-page">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span>Promotion</span>
+            </a>
             <a href="#" class="bottom-nav-item" data-page="leaderboard-page">
                 <svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/></svg>
                 <span>Leaderboard</span>
@@ -434,6 +649,56 @@
                 <span>My Wallet</span>
             </a>
         </nav>
+
+        <!-- BET CONFIRMATION OVERLAY (Exact Photo 1 Style) -->
+        <div id="bet-confirm-dialog-overlay" class="dialog-overlay">
+            <div class="bet-confirm-modal">
+                <div class="bet-confirm-header" id="bet-modal-header" style="background:#3b82f6;">
+                    <p class="game-name">WinGo 1Min</p>
+                    <div class="select-badge" id="bet-modal-select-title">Select Small</div>
+                </div>
+
+                <div class="bet-confirm-body">
+                    <div class="bet-row">
+                        <label>Balance</label>
+                        <div class="bet-chip-group">
+                            <span class="bet-chip active" data-unit="1">1</span>
+                            <span class="bet-chip" data-unit="10">10</span>
+                            <span class="bet-chip" data-unit="100">100</span>
+                            <span class="bet-chip" data-unit="1000">1000</span>
+                        </div>
+                    </div>
+
+                    <div class="bet-row">
+                        <label>Quantity</label>
+                        <div class="qty-control">
+                            <button class="qty-btn" id="qty-minus-btn">-</button>
+                            <span class="qty-val" id="qty-val-display">1</span>
+                            <button class="qty-btn" id="qty-plus-btn">+</button>
+                        </div>
+                    </div>
+
+                    <div class="multiplier-group">
+                        <span class="mult-chip active" data-mult="1">X1</span>
+                        <span class="mult-chip" data-mult="5">X5</span>
+                        <span class="mult-chip" data-mult="10">X10</span>
+                        <span class="mult-chip" data-mult="20">X20</span>
+                        <span class="mult-chip" data-mult="50">X50</span>
+                        <span class="mult-chip" data-mult="100">X100</span>
+                    </div>
+
+                    <div class="rules-checkbox">
+                        <input type="checkbox" id="bet-agree-check" checked>
+                        <label for="bet-agree-check">I agree <span>《Pre-sale rules》</span></label>
+                    </div>
+                </div>
+
+                <div class="bet-confirm-footer">
+                    <button class="btn-cancel-bet" id="cancel-bet-btn">Cancel</button>
+                    <button class="btn-submit-bet" id="submit-bet-confirm-btn">Total amount ₹1.00</button>
+                </div>
+            </div>
+        </div>
 
         <!-- FIRST DEPOSIT BONUS POPUP -->
         <div id="bonus-dialog-overlay" class="dialog-overlay">
@@ -472,7 +737,6 @@
                 <button id="close-deposit-dialog" class="dialog-close-btn">×</button>
                 <h2 style="margin-top:0;">Deposit Funds</h2>
 
-                <!-- Step 1: Select Amount & Terms -->
                 <div id="deposit-step-1">
                     <div class="amount-selector">
                         <button class="btn-amount active" data-amt="100">₹100</button>
@@ -500,7 +764,6 @@
                     <button id="confirm-deposit-step1-btn" class="btn btn-green" style="width:100%;">Confirm & Generate QR</button>
                 </div>
 
-                <!-- Step 2: Show QR & Upload Proof -->
                 <div id="deposit-step-2" style="display:none; text-align:center;">
                     <p style="font-size:0.9em; margin-bottom:8px;">Scan & Pay: <strong style="color:var(--accent-green); font-size:1.1em;" id="qr-display-amount">₹100.00</strong></p>
                     <img src="https://ibb.co/FqVNJbpP" alt="UPI QR" style="width: 170px; height: 170px; object-fit: contain; border-radius: 8px; border: 2px solid var(--accent-blue); background:#fff; padding:4px; margin-bottom:12px;">
@@ -618,7 +881,7 @@
     const REQUIRED_BET_FOR_WITHDRAW = 420.0;
     let isMuted = false;
 
-    // Navigation & Tabs
+    // Navigation & UI View Handler
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
         document.getElementById('sidebar-overlay').classList.toggle('open');
@@ -646,7 +909,6 @@
         });
     });
 
-    // Tab switching for History
     document.querySelectorAll('.ct-history-tabs .tab').forEach(t => {
         t.addEventListener('click', () => {
             const container = t.closest('.page, .ct-container');
@@ -658,25 +920,120 @@
         });
     });
 
-    // Sound Toggle
     document.getElementById('mute-btn').addEventListener('click', () => {
         isMuted = !isMuted;
         document.getElementById('mute-btn').style.opacity = isMuted ? '0.5' : '1';
     });
 
-    // Auth & Data Listeners
+    // AUTH VIEWS & MANAGEMENT
+    const authContainer = document.getElementById('auth-container');
+    const mainWrapper = document.getElementById('main-wrapper');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const verifyForm = document.getElementById('verify-form');
+
+    function showAuthView(v) {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'none';
+        verifyForm.style.display = 'none';
+        if (v === 'login') loginForm.style.display = 'block';
+        if (v === 'signup') signupForm.style.display = 'block';
+        if (v === 'verify') verifyForm.style.display = 'block';
+    }
+
+    document.getElementById('show-signup').addEventListener('click', () => showAuthView('signup'));
+    document.getElementById('show-login').addEventListener('click', () => showAuthView('login'));
+    document.getElementById('back-to-login').addEventListener('click', () => showAuthView('login'));
+
+    let pendingUser = null;
+
     auth.onAuthStateChanged(user => {
-        if (user) {
+        if (user && user.emailVerified) {
             currentUserUid = user.uid;
+            authContainer.style.display = 'none';
+            mainWrapper.style.display = 'flex';
             document.getElementById('user-email-display').textContent = user.email;
             attachUserData(user.uid);
+            setupReferralCode(user.uid);
         } else {
             currentUserUid = null;
+            mainWrapper.style.display = 'none';
+            authContainer.style.display = 'flex';
+            if (user && !user.emailVerified) {
+                pendingUser = user;
+                showAuthView('verify');
+            } else {
+                showAuthView('login');
+            }
         }
     });
 
+    document.getElementById('login-btn').addEventListener('click', () => {
+        const e = document.getElementById('login-email').value.trim();
+        const p = document.getElementById('login-password').value;
+        const err = document.getElementById('login-error');
+        err.style.display = 'none';
+
+        if (!e || !p) { err.textContent = 'Please enter both fields.'; err.style.display = 'block'; return; }
+        auth.signInWithEmailAndPassword(e, p).catch(error => {
+            err.textContent = error.message;
+            err.style.display = 'block';
+        });
+    });
+
+    document.getElementById('signup-btn').addEventListener('click', () => {
+        const e = document.getElementById('signup-email').value.trim();
+        const p = document.getElementById('signup-password').value;
+        const err = document.getElementById('signup-error');
+        err.style.display = 'none';
+
+        if (!e || !p) { err.textContent = 'Please fill all fields.'; err.style.display = 'block'; return; }
+        auth.createUserWithEmailAndPassword(e, p).then(cred => {
+            pendingUser = cred.user;
+            cred.user.sendEmailVerification();
+            showAuthView('verify');
+        }).catch(error => {
+            err.textContent = error.message;
+            err.style.display = 'block';
+        });
+    });
+
+    document.getElementById('check-verified-btn').addEventListener('click', async () => {
+        const u = auth.currentUser || pendingUser;
+        if (!u) return;
+        await u.reload();
+        if (u.emailVerified) {
+            location.reload();
+        } else {
+            const err = document.getElementById('verify-error');
+            err.textContent = 'Email not verified yet! Please check your inbox & spam folder.';
+            err.style.display = 'block';
+        }
+    });
+
+    document.getElementById('resend-verify-btn').addEventListener('click', () => {
+        const u = auth.currentUser || pendingUser;
+        if (u) {
+            u.sendEmailVerification().then(() => alert('Verification link sent again!'));
+        }
+    });
+
+    // Promotion / Referral Setup
+    function setupReferralCode(uid) {
+        const refCode = uid.substring(0, 8).toUpperCase();
+        document.getElementById('invite-code-display').textContent = refCode;
+        document.getElementById('copy-invite-code-btn').onclick = () => {
+            navigator.clipboard.writeText(refCode);
+            alert(`Invitation Code Copied: ${refCode}`);
+        };
+        document.getElementById('copy-invite-link-btn').onclick = () => {
+            const link = `${window.location.origin}/?ref=${refCode}`;
+            navigator.clipboard.writeText(link);
+            alert(`Invitation Link Copied: ${link}`);
+        };
+    }
+
     function attachUserData(uid) {
-        // Balance
         db.ref(`users/${uid}/balance`).on('value', snap => {
             currentBalance = snap.val() || 0;
             const formatted = currentBalance.toFixed(2);
@@ -684,7 +1041,6 @@
             document.querySelectorAll('.game-balance-value').forEach(el => el.textContent = `₹${formatted}`);
         });
 
-        // Transactions History
         db.ref(`users/${uid}/transactions`).orderByChild('timestamp').limitToLast(20).on('value', snap => {
             const tbody = document.getElementById('transaction_history_body');
             tbody.innerHTML = '';
@@ -692,8 +1048,7 @@
                 tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No transactions yet.</td></tr>';
                 return;
             }
-            let list = [];
-            snap.forEach(c => list.push(c.val()));
+            let list = []; snap.forEach(c => list.push(c.val()));
             list.reverse().forEach(tx => {
                 const row = tbody.insertRow();
                 row.insertCell(0).textContent = tx.description || 'Transaction';
@@ -704,7 +1059,6 @@
             });
         });
 
-        // Deposit History
         db.ref(`deposit_requests/${uid}`).on('value', snap => {
             const tbody = document.getElementById('deposit_history_tbody');
             tbody.innerHTML = '';
@@ -722,7 +1076,6 @@
             });
         });
 
-        // Withdraw History
         db.ref(`withdraw_requests/${uid}`).on('value', snap => {
             const tbody = document.getElementById('withdraw_history_tbody');
             tbody.innerHTML = '';
@@ -740,7 +1093,6 @@
             });
         });
 
-        // Turnover Calculation for ₹420 Withdrawal Rule
         db.ref(`users/${uid}/my_ct_history`).on('value', snap => {
             totalBetTurnover = 0;
             if (snap.exists()) {
@@ -750,11 +1102,10 @@
         });
     }
 
-    // Modal Helpers
     function openModal(id) { document.getElementById(id).classList.add('show'); }
     function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-    // First Deposit Bonus
+    // FIRST DEPOSIT BONUS
     document.getElementById('open-bonus-btn').addEventListener('click', () => openModal('bonus-dialog-overlay'));
     document.getElementById('close-bonus-dialog').addEventListener('click', () => closeModal('bonus-dialog-overlay'));
     window.selectBonusAmount = function(amt) {
@@ -763,7 +1114,7 @@
         openModal('deposit-dialog-overlay');
     };
 
-    // 2-Step Deposit Actions
+    // 2-STEP DEPOSIT
     document.getElementById('open-deposit-modal-btn').addEventListener('click', () => {
         document.getElementById('deposit-step-1').style.display = 'block';
         document.getElementById('deposit-step-2').style.display = 'none';
@@ -827,7 +1178,7 @@
         }
     });
 
-    // Withdrawal Actions
+    // WITHDRAW
     document.getElementById('open-withdraw-modal-btn').addEventListener('click', () => openModal('withdraw-dialog-overlay'));
     document.getElementById('close-withdraw-dialog').addEventListener('click', () => closeModal('withdraw-dialog-overlay'));
 
@@ -845,7 +1196,6 @@
         if (isNaN(amt) || amt < 100 || amt > 50000) { alert('Withdrawal range is ₹100.00 to ₹50,000.00'); return; }
         if (amt > currentBalance) { alert('Insufficient balance.'); return; }
 
-        // REQUIRED BET RULE CHECK (₹420)
         if (totalBetTurnover < REQUIRED_BET_FOR_WITHDRAW) {
             alert(`Withdrawal locked! Need to bet at least ₹420.00 to withdraw. Completed: ₹${totalBetTurnover.toFixed(2)}`);
             return;
@@ -876,7 +1226,7 @@
         }
     });
 
-    // Leaderboard
+    // LEADERBOARD
     function loadLeaderboard() {
         const tbody = document.getElementById('leaderboard_body');
         tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loading...</td></tr>';
@@ -899,11 +1249,13 @@
         });
     }
 
-    // Color Trading Game Engine (With 0-9 Balls & Multipliers)
+    // GAME ENGINE & BET CONFIRMATION MODAL (Photo 1 Logic)
     let activeInterval = null;
     let ct_periodId = "";
     let ct_countdown = 60;
     let winAutoCloseInterval = null;
+
+    let activeBetSelection = { type: '', val: '', unit: 1, qty: 1, mult: 1 };
 
     const numberImageUrls = [
         'https://i.ibb.co/JWsTpKzy/file-00000000888c61f5b9918f5f0c5e441c.png',
@@ -926,7 +1278,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'ct-number-btn';
                 btn.innerHTML = `<img src="${numberImageUrls[i]}" alt="${i}">`;
-                btn.onclick = () => ct_placeBet('number', i);
+                btn.onclick = () => openBetConfirm('number', i);
                 grid.appendChild(btn);
             }
             grid.dataset.init = "true";
@@ -947,7 +1299,6 @@
             }
         }, 1000);
 
-        // Load History
         db.ref('ct_game_history').limitToLast(15).on('value', snap => {
             const tbody = document.getElementById('ct_game_history_body');
             tbody.innerHTML = '';
@@ -962,31 +1313,106 @@
         });
     }
 
-    window.ct_multiplyBet = function(m) {
-        const inp = document.getElementById('ct_bet_amount');
-        const val = parseFloat(inp.value) || 10;
-        inp.value = (val * m).toFixed(0);
+    // OPEN BET CONFIRMATION MODAL WITH DYNAMIC COLOR (Photo 1 Style)
+    window.openBetConfirm = function(type, val) {
+        if (ct_countdown <= 5) { alert('Round closing. Bet next round.'); return; }
+        
+        activeBetSelection = { type, val, unit: 1, qty: 1, mult: 1 };
+        
+        const header = document.getElementById('bet-modal-header');
+        const titleBadge = document.getElementById('bet-modal-select-title');
+        titleBadge.textContent = `Select ${val}`;
+
+        // Header Background by Selection Color
+        if (val === 'Red' || val === 'Big') {
+            header.style.background = '#ef4444'; // Red
+        } else if (val === 'Green' || val === 'Small') {
+            header.style.background = '#22c55e'; // Green
+        } else if (val === 'Violet') {
+            header.style.background = '#a855f7'; // Violet
+        } else {
+            header.style.background = '#3b82f6'; // Number / Blue
+        }
+
+        // Reset selections
+        document.querySelectorAll('.bet-chip').forEach(c => c.classList.remove('active'));
+        document.querySelector('.bet-chip[data-unit="1"]').classList.add('active');
+        document.querySelectorAll('.mult-chip').forEach(m => m.classList.remove('active'));
+        document.querySelector('.mult-chip[data-mult="1"]').classList.add('active');
+        document.getElementById('qty-val-display').textContent = '1';
+
+        updateBetTotal();
+        openModal('bet-confirm-dialog-overlay');
     };
 
-    window.ct_placeBet = function(type, val) {
-        if (ct_countdown <= 5) { alert('Round closing. Bet next round.'); return; }
-        const amt = parseFloat(document.getElementById('ct_bet_amount').value);
-        if (isNaN(amt) || amt <= 0) { alert('Please enter valid bet amount.'); return; }
-        if (amt > currentBalance) { alert('Insufficient balance.'); return; }
+    function updateBetTotal() {
+        const total = activeBetSelection.unit * activeBetSelection.qty * activeBetSelection.mult;
+        document.getElementById('submit-bet-confirm-btn').textContent = `Total amount ₹${total.toFixed(2)}`;
+    }
 
-        db.ref(`users/${currentUserUid}/balance`).transaction(b => (b >= amt ? b - amt : undefined)).then(res => {
-            if (!res.committed) { alert('Insufficient funds.'); return; }
+    // Units
+    document.querySelectorAll('.bet-chip').forEach(c => {
+        c.addEventListener('click', () => {
+            document.querySelectorAll('.bet-chip').forEach(x => x.classList.remove('active'));
+            c.classList.add('active');
+            activeBetSelection.unit = parseInt(c.dataset.unit);
+            updateBetTotal();
+        });
+    });
+
+    // Quantities (+ / -)
+    document.getElementById('qty-minus-btn').addEventListener('click', () => {
+        if (activeBetSelection.qty > 1) {
+            activeBetSelection.qty--;
+            document.getElementById('qty-val-display').textContent = activeBetSelection.qty;
+            updateBetTotal();
+        }
+    });
+    document.getElementById('qty-plus-btn').addEventListener('click', () => {
+        activeBetSelection.qty++;
+        document.getElementById('qty-val-display').textContent = activeBetSelection.qty;
+        updateBetTotal();
+    });
+
+    // Multipliers (X1, X5, etc.)
+    document.querySelectorAll('.mult-chip').forEach(m => {
+        m.addEventListener('click', () => {
+            document.querySelectorAll('.mult-chip').forEach(x => x.classList.remove('active'));
+            m.classList.add('active');
+            activeBetSelection.mult = parseInt(m.dataset.mult);
+            updateBetTotal();
+        });
+    });
+
+    document.getElementById('cancel-bet-btn').addEventListener('click', () => closeModal('bet-confirm-dialog-overlay'));
+
+    // FINAL BET EXECUTION
+    document.getElementById('submit-bet-confirm-btn').addEventListener('click', () => {
+        if (!document.getElementById('bet-agree-check').checked) {
+            alert('Please agree to pre-sale rules.'); return;
+        }
+
+        const totalAmt = activeBetSelection.unit * activeBetSelection.qty * activeBetSelection.mult;
+        if (totalAmt > currentBalance) {
+            alert('Insufficient balance.'); return;
+        }
+
+        db.ref(`users/${currentUserUid}/balance`).transaction(b => (b >= totalAmt ? b - totalAmt : undefined)).then(res => {
+            if (!res.committed) { alert('Transaction failed. Low balance.'); return; }
+
             db.ref(`users/${currentUserUid}/my_ct_history`).push({
                 period: ct_periodId,
-                type: type,
-                value: val,
-                amount: amt,
+                type: activeBetSelection.type,
+                value: activeBetSelection.val,
+                amount: totalAmt,
                 result: 'waiting',
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
-            alert(`Bet of ₹${amt} on ${val} placed!`);
+
+            closeModal('bet-confirm-dialog-overlay');
+            alert(`Bet of ₹${totalAmt.toFixed(2)} placed on ${activeBetSelection.val}!`);
         });
-    };
+    });
 
     async function ct_endRound() {
         const resSnap = await db.ref('admin_controls/color_trading/next_result').once('value');
@@ -1011,7 +1437,6 @@
             winColors: winColors
         });
 
-        // Check user bets
         const betsSnap = await db.ref(`users/${currentUserUid}/my_ct_history`).orderByChild('period').equalTo(ct_periodId).once('value');
         if (betsSnap.exists()) {
             let totalWin = 0;
