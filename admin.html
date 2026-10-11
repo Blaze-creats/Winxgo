@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Control Panel</title>
     <!-- Firebase SDKs -->
-    <script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js)"></script>
-    <script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js)"></script>
-    <script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js)"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
             --bg-dark: #0d1117; --bg-primary: #161b22; --bg-secondary: #21262d;
@@ -16,7 +16,7 @@
             --accent-purple: #a371f7; --accent-yellow: #d29922;
             --sidebar-width: 240px;
         }
-        @import url('[https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap](https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap)');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         
         html { scroll-behavior: smooth; }
         body { font-family: 'Roboto', sans-serif; background-color: var(--bg-dark); color: var(--text-primary); margin: 0; padding: 0; }
@@ -163,8 +163,8 @@
                     <h3>Promotion Management</h3>
                     <div class="admin-panel" style="background-color: var(--bg-primary);">
                         <h4>Add New Banner</h4>
-                        <div class="input-group"> <label for="new_promo_banner_url">New Banner Image URL</label> <input type="text" id="new_promo_banner_url" placeholder="[https://example.com/new-banner.jpg](https://example.com/new-banner.jpg)"> </div>
-                        <div class="input-group"> <label for="new_promo_link_url">New Target Link URL</label> <input type="text" id="new_promo_link_url" placeholder="[https://your-promotion-link.com](https://your-promotion-link.com)"> </div>
+                        <div class="input-group"> <label for="new_promo_banner_url">New Banner Image URL</label> <input type="text" id="new_promo_banner_url" placeholder="https://example.com/new-banner.jpg"> </div>
+                        <div class="input-group"> <label for="new_promo_link_url">New Target Link URL</label> <input type="text" id="new_promo_link_url" placeholder="https://your-promotion-link.com"> </div>
                         <button class="btn btn-green" id="create_promo_banner_btn" style="width: 100%;">Create New Banner</button>
                         <p class="admin-status" id="promo_create_status"></p>
                     </div>
@@ -191,9 +191,9 @@
         <div class="admin-control" style="flex-direction: column; gap: 15px;">
             <div class="input-group"> <label>App / Brand Name</label> <input type="text" id="setting_appName" placeholder="e.g., Ultimate Pro Hub" value="Pro Hub"> </div>
             <div class="input-group"> <label>Game Name</label> <input type="text" id="setting_gameName" placeholder="e.g., Win Go 1Min" value="Win Go 1Min"> </div>
-            <div class="input-group"> <label>Game Card Image URL (16:9)</label> <input type="text" id="setting_gameImageUrl" placeholder="https://..." value="[https://i.ibb.co/whtPxrws/Uvd-SHB7n.jpg](https://i.ibb.co/whtPxrws/Uvd-SHB7n.jpg)"> </div>
+            <div class="input-group"> <label>Game Card Image URL (16:9)</label> <input type="text" id="setting_gameImageUrl" placeholder="https://..." value="https://i.ibb.co/whtPxrws/Uvd-SHB7n.jpg"> </div>
             <div class="input-group"> <label>App Logo URL (Optional)</label> <input type="text" id="setting_logoUrl" placeholder="https://..."> </div>
-            <div class="input-group"> <label>Privacy Policy URL</label> <input type="text" id="setting_privacyPolicyUrl" placeholder="[https://your-privacy-policy.com](https://your-privacy-policy.com)"> </div>
+            <div class="input-group"> <label>Privacy Policy URL</label> <input type="text" id="setting_privacyPolicyUrl" placeholder="https://your-privacy-policy.com"> </div>
             
             <h4 style="margin-bottom:0; margin-top: 15px; color: var(--accent-yellow);">Transaction Limits</h4>
             <div class="input-group"> <label>Min Deposit (₹)</label> <input type="number" id="setting_minDeposit" value="100"> </div>
@@ -228,11 +228,11 @@
             <p class="admin-status" id="ct_adminStatus"></p>
         </div>`;
 
-    // NEW FIREBASE CONFIGURATION UPDATED HERE
+    // UPDATED FIREBASE CONFIGURATION (Winx-c91df)
     const firebaseConfig = {
       apiKey: "AIzaSyAezPrNJpJE-4KZD_AuT_kON5VDmpTefbc",
       authDomain: "winx-c91df.firebaseapp.com",
-      databaseURL: "[https://winx-c91df-default-rtdb.firebaseio.com](https://winx-c91df-default-rtdb.firebaseio.com)",
+      databaseURL: "https://winx-c91df-default-rtdb.firebaseio.com",
       projectId: "winx-c91df",
       storageBucket: "winx-c91df.firebasestorage.app",
       messagingSenderId: "385588479622",
@@ -549,11 +549,90 @@
         document.getElementById('ct_adminColor').value = 'Any';
     });
 
-    const loginBox = document.getElementById('login-box'), signupBox = document.getElementById('signup-box');
-    document.getElementById('show-signup').addEventListener('click', () => { loginBox.style.display = 'none'; signupBox.style.display = 'block'; });
-    document.getElementById('show-login').addEventListener('click', () => { signupBox.style.display = 'none'; loginBox.style.display = 'block'; });
-    document.getElementById('signup-btn').addEventListener('click', () => { const e = document.getElementById('signup-email').value, p = document.getElementById('signup-password').value, c = document.getElementById('signup-confirm-password').value, err = document.getElementById('signup-error'); err.textContent = ''; if (p !== c) { err.textContent = 'Passwords do not match.'; return; } auth.createUserWithEmailAndPassword(e, p).then(() => { alert('Sign up successful!'); loginBox.style.display = 'block'; signupBox.style.display = 'none'; }).catch(e => err.textContent = e.message); });
-    document.getElementById('login-btn').addEventListener('click', () => { const e = document.getElementById('login-email').value, p = document.getElementById('login-password').value, err = document.getElementById('login-error'); err.textContent = ''; auth.signInWithEmailAndPassword(e, p).catch(e => err.textContent = e.message); });
+    const loginBox = document.getElementById('login-box');
+    const signupBox = document.getElementById('signup-box');
+    
+    document.getElementById('show-signup').addEventListener('click', () => { 
+        loginBox.style.display = 'none'; 
+        signupBox.style.display = 'block'; 
+    });
+    
+    document.getElementById('show-login').addEventListener('click', () => { 
+        signupBox.style.display = 'none'; 
+        loginBox.style.display = 'block'; 
+    });
+
+    // FIXED ADMIN LOGIN BUTTON HANDLER
+    document.getElementById('login-btn').addEventListener('click', async () => {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const errEl = document.getElementById('login-error');
+        const loginBtn = document.getElementById('login-btn');
+
+        errEl.textContent = '';
+
+        if (!email || !password) {
+            errEl.textContent = 'Please enter both email and password.';
+            return;
+        }
+
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Logging in...';
+
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+        } catch (error) {
+            console.error("Admin Login Error:", error);
+            if (error.code === 'auth/user-not-found') {
+                errEl.textContent = 'Account not found! Click Sign Up below first.';
+            } else if (error.code === 'auth/wrong-password') {
+                errEl.textContent = 'Incorrect password.';
+            } else {
+                errEl.textContent = error.message;
+            }
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Login';
+        }
+    });
+
+    // FIXED ADMIN SIGNUP BUTTON HANDLER
+    document.getElementById('signup-btn').addEventListener('click', async () => {
+        const email = document.getElementById('signup-email').value.trim();
+        const password = document.getElementById('signup-password').value;
+        const confirmPassword = document.getElementById('signup-confirm-password').value;
+        const errEl = document.getElementById('signup-error');
+        const signupBtn = document.getElementById('signup-btn');
+
+        errEl.textContent = '';
+
+        if (!email || !password) {
+            errEl.textContent = 'Please fill all fields.';
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            errEl.textContent = 'Passwords do not match.';
+            return;
+        }
+
+        signupBtn.disabled = true;
+        signupBtn.textContent = 'Creating Account...';
+
+        try {
+            await auth.createUserWithEmailAndPassword(email, password);
+            alert('Admin account created successfully!');
+            loginBox.style.display = 'block';
+            signupBox.style.display = 'none';
+        } catch (error) {
+            console.error("Admin Signup Error:", error);
+            errEl.textContent = error.message;
+        } finally {
+            signupBtn.disabled = false;
+            signupBtn.textContent = 'Sign Up';
+        }
+    });
+
     document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
 </script>
 </body>
