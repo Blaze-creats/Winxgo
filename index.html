@@ -53,7 +53,7 @@
             position: relative;
         }
 
-        /* Auth Container (Login / Signup) */
+        /* Auth Container */
         #auth-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-dark); z-index: 9999;
@@ -291,7 +291,7 @@
             color: #fff; cursor: pointer; font-size: 0.95em;
         }
 
-        /* PROMOTION / AGENCY PAGE (Exact Photo 2 Style) */
+        /* PROMOTION / AGENCY PAGE */
         .agency-page-container {
             background: #f8fafc; color: #1e293b; border-radius: 12px; margin: -15px; padding-bottom: 20px;
         }
@@ -338,7 +338,7 @@
             font-size: 0.9em; color: #64748b;
         }
 
-        /* Exact Win Dialog (Image 3 Style) */
+        /* Win Dialog */
         .win-modal-card {
             position: relative; width: 92%; max-width: 330px;
             background: linear-gradient(180deg, #ff6a00 0%, #ee0979 100%);
@@ -374,10 +374,9 @@
 </head>
 <body>
 
-    <!-- AUTHENTICATION CONTAINER (LOGIN / SIGNUP) -->
+    <!-- AUTH CONTAINER (LOGIN FIRST) -->
     <div id="auth-container">
         <div id="auth-box">
-            <!-- LOGIN FORM -->
             <div id="login-form">
                 <h2>User Login</h2>
                 <p class="auth-error" id="login-error"></p>
@@ -393,7 +392,6 @@
                 <p class="auth-toggle-text">Don't have an account? <a id="show-signup">Sign Up</a></p>
             </div>
 
-            <!-- SIGNUP FORM -->
             <div id="signup-form" style="display: none;">
                 <h2>Create Account</h2>
                 <p class="auth-error" id="signup-error"></p>
@@ -409,11 +407,10 @@
                 <p class="auth-toggle-text">Already have an account? <a id="show-login">Login</a></p>
             </div>
 
-            <!-- EMAIL VERIFY SCREEN -->
             <div id="verify-form" style="display: none; text-align: center;">
                 <h2>Verify Your Email</h2>
                 <p style="font-size: 0.88em; color: var(--text-secondary); line-height: 1.5; margin-bottom: 15px;" id="verify-message">
-                    Please click the verification link sent to your email, then verify below.
+                    Please click the verification link sent to your email, then click below.
                 </p>
                 <p class="auth-error" id="verify-error"></p>
                 <button id="check-verified-btn" class="btn btn-green" style="width: 100%; margin-bottom: 10px;">I have verified (Check & Login)</button>
@@ -462,7 +459,7 @@
                 <div style="width:100%; aspect-ratio:16/9; background:#000;">
                     <img id="dynamic-game-img" src="https://i.ibb.co/whtPxrws/Uvd-SHB7n.jpg" alt="Win Go 1Min" style="width:100%; height:100%; object-fit:cover;">
                 </div>
-                <h3 style="padding:15px; margin:0;" id="dynamic-game-name">Win Go 1Min</h3>
+                <h3 style="padding:15px; margin:0;">Win Go 1Min</h3>
             </div>
         </div>
 
@@ -513,7 +510,7 @@
                     <div class="ct-header-main">
                         <p style="margin:0; font-size:0.9em; opacity:0.9;">Time remaining</p>
                         <p class="timer" id="ct_timer">00:00</p>
-                        <p style="margin:5px 0 0 0; font-size:0.9em; opacity:0.9; font-weight:700;">Period: <span id="ct_period_display">1000</span></p>
+                        <p style="margin:5px 0 0 0; font-size:0.95em; opacity:0.95; font-weight:800;">Period: <span id="ct_period_display">1000</span></p>
                     </div>
                 </div>
 
@@ -564,7 +561,7 @@
             </div>
         </div>
 
-        <!-- 5. PROMOTION / AGENCY PAGE (Photo 2 Exact Style) -->
+        <!-- 5. PROMOTION / AGENCY PAGE -->
         <div id="promotion-page" class="page">
             <div class="agency-page-container">
                 <div class="agency-header-card">
@@ -888,7 +885,7 @@
     const REQUIRED_BET_FOR_WITHDRAW = 420.0;
     let isMuted = false;
 
-    // Synchronized Global Period (Starts from 1000)
+    // Synchronized Global Period (Starts from 1000 continuously)
     let currentGlobalPeriod = 1000;
     let ct_countdown = 60;
     let activeInterval = null;
@@ -1266,19 +1263,6 @@
     }
 
     // GAME ENGINE & PERIOD SYNCHRONIZATION (Starting from 1000 continuously)
-    const numberImageUrls = [
-        'https://i.ibb.co/JWsTpKzy/file-00000000888c61f5b9918f5f0c5e441c.png',
-        'https://i.ibb.co/rG4V1V6x/file-00000000743c622f8a519067b7a6b01b.png',
-        'https://i.ibb.co/8LTg2N47/file-000000005a6062308b7e60f5c324a9d5.png',
-        'https://i.ibb.co/wFsHrRsg/file-00000000f4a861f7bd5e2241fbe89e1b.png',
-        'https://i.ibb.co/fdn9r4fW/file-000000007408622f82d0e1ccf9b10671.png',
-        'https://i.ibb.co/jc6z0y7/file-00000000efe46230882776e4c018472f.png',
-        'https://i.ibb.co/YYqL9k4/file-00000000f16861f8b7a2c3379a2662f1.png',
-        'https://i.ibb.co/99p2dXmV/file-0000000037a461f88abc1709c2401377.png',
-        'https://i.ibb.co/LzVwH4Xb/file-000000003fa061f88628919a9560b7f7.png',
-        'https://i.ibb.co/DgYwxN7r/file-00000000e8546230b05909132da85d93.png'
-    ];
-
     function initPeriodSync() {
         // Sync Global Period in Firebase (Default 1000)
         db.ref('game_state/current_period').on('value', snap => {
@@ -1288,10 +1272,14 @@
             } else {
                 currentGlobalPeriod = snap.val();
             }
-            document.getElementById('ct_period_display').textContent = currentGlobalPeriod;
+            const disp = document.getElementById('ct_period_display');
+            if (disp) disp.textContent = currentGlobalPeriod;
+            const modalDisp = document.getElementById('bet-modal-period-num');
+            if (modalDisp) modalDisp.textContent = currentGlobalPeriod;
         });
 
         startColorTradingGame();
+        listenAllRealtimeHistory();
     }
 
     function startColorTradingGame() {
@@ -1314,24 +1302,108 @@
             const now = new Date();
             ct_countdown = 60 - now.getSeconds();
 
-            document.getElementById('ct_timer').textContent = `00:${ct_countdown.toString().padStart(2, "0")}`;
+            const timerEl = document.getElementById('ct_timer');
+            if (timerEl) {
+                timerEl.textContent = `00:${ct_countdown.toString().padStart(2, "0")}`;
+            }
 
-            // Automatic end round on second 0 / 60
+            // Automatic round transition at 60 / 0
             if (ct_countdown === 60 || ct_countdown === 0) {
-                ct_endRound();
+                executeAutoRoundTransition();
             }
         }, 1000);
+    }
 
-        // Continuous History Listeners (Shows all previous periods)
-        db.ref('ct_game_history').limitToLast(25).on('value', snap => {
+    let isRoundProcessing = false;
+    async function executeAutoRoundTransition() {
+        if (isRoundProcessing) return;
+        isRoundProcessing = true;
+
+        const periodToSettle = currentGlobalPeriod;
+
+        // Check Admin forced result
+        const adminSnap = await db.ref('admin_controls/color_trading/next_result').once('value');
+        let winNum = Math.floor(Math.random() * 10);
+        if (adminSnap.exists() && adminSnap.val() !== null) {
+            winNum = parseInt(adminSnap.val());
+            adminSnap.ref.remove();
+        }
+
+        const isGreen = [1, 3, 7, 9].includes(winNum);
+        const isRed = [2, 4, 6, 8].includes(winNum);
+        let winColors = [];
+        if (isGreen) winColors.push('Green');
+        if (isRed) winColors.push('Red');
+        if (winNum === 0 || winNum === 5) winColors.push('Violet');
+        const winSize = winNum >= 5 ? 'Big' : 'Small';
+
+        // 1. Save to ct_game_history
+        await db.ref(`ct_game_history/${periodToSettle}`).set({
+            period: periodToSettle,
+            winNum: winNum,
+            winSize: winSize,
+            winColors: winColors,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        // 2. Settle active user bets
+        if (currentUserUid) {
+            const userBetsSnap = await db.ref(`users/${currentUserUid}/my_ct_history`).orderByChild('period').equalTo(periodToSettle).once('value');
+            if (userBetsSnap.exists()) {
+                let userRoundTotalWin = 0;
+                userBetsSnap.forEach(snap => {
+                    const b = snap.val();
+                    let won = false;
+                    let mult = 2;
+                    if (b.type === 'color' && winColors.includes(b.value)) { won = true; mult = (b.value === 'Violet' ? 4.5 : 2); }
+                    if (b.type === 'size' && b.value === winSize) { won = true; mult = 2; }
+                    if (b.type === 'number' && parseInt(b.value) === winNum) { won = true; mult = 9; }
+
+                    if (won) {
+                        const winProfit = b.amount * mult;
+                        userRoundTotalWin += winProfit;
+                        db.ref(`users/${currentUserUid}/balance`).transaction(bal => (bal || 0) + winProfit);
+                        snap.ref.child('result').set(winProfit);
+                    } else {
+                        snap.ref.child('result').set(-b.amount);
+                    }
+                });
+
+                if (userRoundTotalWin > 0) {
+                    ct_showDialog({
+                        color: winColors.join('/'),
+                        num: winNum,
+                        size: winSize,
+                        bonus: userRoundTotalWin,
+                        period: periodToSettle
+                    });
+                }
+            }
+        }
+
+        // 3. Step to Next Period (1000 -> 1001 -> 1002...)
+        const nextPeriod = periodToSettle + 1;
+        await db.ref('game_state/current_period').set(nextPeriod);
+
+        setTimeout(() => { isRoundProcessing = false; }, 3000);
+    }
+
+    // REALTIME LISTENERS FOR ALL 3 HISTORY TABS (Fixed)
+    function listenAllRealtimeHistory() {
+        // Tab 1: Game History
+        db.ref('ct_game_history').limitToLast(30).on('value', snap => {
             const tbody = document.getElementById('ct_game_history_body');
+            if (!tbody) return;
             tbody.innerHTML = '';
             if (!snap.exists()) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No rounds yet.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="color:#94a3b8;">No rounds yet.</td></tr>';
                 return;
             }
-            let list = []; snap.forEach(c => list.push(c.val()));
-            list.reverse().forEach(g => {
+            let list = [];
+            snap.forEach(c => list.push(c.val()));
+            list.reverse();
+
+            list.forEach(g => {
                 const row = tbody.insertRow();
                 row.insertCell(0).textContent = g.period;
                 
@@ -1346,17 +1418,21 @@
             });
         });
 
-        // User Bets Listeners
+        // Tab 2: My History (User Bets)
         if (currentUserUid) {
-            db.ref(`users/${currentUserUid}/my_ct_history`).limitToLast(20).on('value', snap => {
+            db.ref(`users/${currentUserUid}/my_ct_history`).limitToLast(30).on('value', snap => {
                 const tbody = document.getElementById('ct_my_history_body');
+                if (!tbody) return;
                 tbody.innerHTML = '';
                 if (!snap.exists()) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No bets placed yet.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" style="color:#94a3b8;">No bets placed yet.</td></tr>';
                     return;
                 }
-                let list = []; snap.forEach(c => list.push(c.val()));
-                list.reverse().forEach(b => {
+                let list = [];
+                snap.forEach(c => list.push(c.val()));
+                list.reverse();
+
+                list.forEach(b => {
                     const row = tbody.insertRow();
                     row.insertCell(0).textContent = b.period;
                     row.insertCell(1).textContent = b.value;
@@ -1365,16 +1441,40 @@
                     if (b.result === 'waiting') {
                         resCell.textContent = 'Waiting';
                         resCell.style.color = 'var(--accent-yellow)';
+                        resCell.style.fontWeight = 'bold';
                     } else if (b.result > 0) {
                         resCell.textContent = `+₹${b.result.toFixed(2)}`;
                         resCell.style.color = 'var(--accent-green)';
+                        resCell.style.fontWeight = 'bold';
                     } else {
                         resCell.textContent = `-₹${Math.abs(b.amount).toFixed(2)}`;
                         resCell.style.color = 'var(--accent-red)';
+                        resCell.style.fontWeight = 'bold';
                     }
                 });
             });
         }
+
+        // Tab 3: All Bets (All Players)
+        db.ref('all_ct_bets').limitToLast(30).on('value', snap => {
+            const tbody = document.getElementById('ct_all_bets_history_body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (!snap.exists()) {
+                tbody.innerHTML = '<tr><td colspan="3" style="color:#94a3b8;">No bets recorded.</td></tr>';
+                return;
+            }
+            let list = [];
+            snap.forEach(c => list.push(c.val()));
+            list.reverse();
+
+            list.forEach(b => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = b.email ? b.email.replace(/^(...).*?(@.*)$/, "$1***$2") : 'Player';
+                row.insertCell(1).textContent = b.selection;
+                row.insertCell(2).textContent = `₹${(b.amount || 0).toFixed(2)}`;
+            });
+        });
     }
 
     function getNumberColor(num) {
@@ -1388,7 +1488,7 @@
         inp.value = (val * m).toFixed(0);
     };
 
-    // OPEN BET CONFIRMATION MODAL WITH MATCHING PERIOD (Photo 1 Style)
+    // OPEN BET CONFIRMATION MODAL (Photo 1 Style)
     window.openBetConfirm = function(type, val) {
         if (ct_countdown <= 5) { alert('Round closing! Please bet for next round.'); return; }
         
@@ -1410,6 +1510,7 @@
             header.style.background = '#3b82f6';
         }
 
+        // Reset state
         document.querySelectorAll('.bet-chip').forEach(c => c.classList.remove('active'));
         document.querySelector('.bet-chip[data-unit="1"]').classList.add('active');
         document.querySelectorAll('.mult-chip').forEach(m => m.classList.remove('active'));
@@ -1459,7 +1560,7 @@
 
     document.getElementById('cancel-bet-btn').addEventListener('click', () => closeModal('bet-confirm-dialog-overlay'));
 
-    // EXECUTE BET ON ACTIVE GLOBAL PERIOD
+    // EXECUTE BET ON EXACT SYNCHRONIZED PERIOD
     document.getElementById('submit-bet-confirm-btn').addEventListener('click', () => {
         if (!document.getElementById('bet-agree-check').checked) {
             alert('Please agree to pre-sale rules.'); return;
@@ -1469,18 +1570,30 @@
         if (totalAmt > currentBalance) {
             alert('Insufficient balance.'); return;
         }
+        if (!currentUserUid) {
+            alert('Please login first.'); return;
+        }
 
         const targetPeriod = currentGlobalPeriod;
 
         db.ref(`users/${currentUserUid}/balance`).transaction(b => (b >= totalAmt ? b - totalAmt : undefined)).then(res => {
             if (!res.committed) { alert('Transaction failed. Low balance.'); return; }
 
-            db.ref(`users/${currentUserUid}/my_ct_history`).push({
+            const betData = {
                 period: targetPeriod,
                 type: activeBetSelection.type,
                 value: activeBetSelection.val,
                 amount: totalAmt,
                 result: 'waiting',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            // Save in user bets & global bets
+            db.ref(`users/${currentUserUid}/my_ct_history`).push(betData);
+            db.ref('all_ct_bets').push({
+                email: auth.currentUser.email,
+                selection: activeBetSelection.val,
+                amount: totalAmt,
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
 
@@ -1488,80 +1601,6 @@
             alert(`Bet of ₹${totalAmt.toFixed(2)} placed on ${activeBetSelection.val} for Period ${targetPeriod}!`);
         });
     });
-
-    // AUTO CONTINUOUS ROUND END (Always executes, incrementing 1000 -> 1001 -> 1002...)
-    let roundProcessing = false;
-    async function ct_endRound() {
-        if (roundProcessing) return;
-        roundProcessing = true;
-
-        const periodFinished = currentGlobalPeriod;
-
-        const resSnap = await db.ref('admin_controls/color_trading/next_result').once('value');
-        let winNum = Math.floor(Math.random() * 10);
-        if (resSnap.exists() && resSnap.val() !== null) {
-            winNum = parseInt(resSnap.val());
-            resSnap.ref.remove();
-        }
-
-        const isGreen = [1, 3, 7, 9].includes(winNum);
-        const isRed = [2, 4, 6, 8].includes(winNum);
-        let winColors = [];
-        if (isGreen) winColors.push('Green');
-        if (isRed) winColors.push('Red');
-        if (winNum === 0 || winNum === 5) winColors.push('Violet');
-        const winSize = winNum >= 5 ? 'Big' : 'Small';
-
-        // Save round history continuously
-        await db.ref(`ct_game_history/${periodFinished}`).set({
-            period: periodFinished,
-            winNum: winNum,
-            winSize: winSize,
-            winColors: winColors,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        // Settle bets for finished period
-        if (currentUserUid) {
-            const betsSnap = await db.ref(`users/${currentUserUid}/my_ct_history`).orderByChild('period').equalTo(periodFinished).once('value');
-            if (betsSnap.exists()) {
-                let totalWin = 0;
-                betsSnap.forEach(b => {
-                    const bet = b.val();
-                    let won = false;
-                    let multiplier = 2;
-                    if (bet.type === 'color' && winColors.includes(bet.value)) { won = true; multiplier = (bet.value === 'Violet' ? 4.5 : 2); }
-                    if (bet.type === 'size' && bet.value === winSize) { won = true; multiplier = 2; }
-                    if (bet.type === 'number' && parseInt(bet.value) === winNum) { won = true; multiplier = 9; }
-
-                    if (won) {
-                        const profit = bet.amount * multiplier;
-                        totalWin += profit;
-                        db.ref(`users/${currentUserUid}/balance`).transaction(bal => (bal || 0) + profit);
-                        b.ref.child('result').set(profit);
-                    } else {
-                        b.ref.child('result').set(-bet.amount);
-                    }
-                });
-
-                if (totalWin > 0) {
-                    ct_showDialog({
-                        color: winColors.join('/'),
-                        num: winNum,
-                        size: winSize,
-                        bonus: totalWin,
-                        period: periodFinished
-                    });
-                }
-            }
-        }
-
-        // Increment period continuously
-        const nextPeriod = periodFinished + 1;
-        await db.ref('game_state/current_period').set(nextPeriod);
-
-        setTimeout(() => { roundProcessing = false; }, 3000);
-    }
 
     function ct_showDialog(winData) {
         document.getElementById('ct_win_dialog_color').textContent = winData.color;
