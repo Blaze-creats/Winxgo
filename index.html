@@ -68,7 +68,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Main Floating Balance Card */
+        /* Floating Wallet Card */
         .wallet-card-floating {
             background: var(--card-white);
             border-radius: 16px;
@@ -115,30 +115,21 @@
         .btn-withdraw { background: #f43f5e; }
         .btn-deposit { background: #10b981; }
 
-        /* Mode Tabs Row */
-        .timer-modes-row {
-            display: flex;
+        /* Single Mode Bar (1 Min Only) */
+        .single-mode-bar {
             background: var(--card-white);
             margin: 0 14px 12px 14px;
             border-radius: 12px;
-            padding: 6px;
-            justify-content: space-around;
-        }
-        .mode-tab {
+            padding: 10px 16px;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.75em;
-            color: var(--text-gray);
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .mode-tab.active {
-            background: #fffbeb;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 800;
             color: var(--theme-yellow-dark);
-            border: 1px solid #fde68a;
+            border: 1.5px solid #fde68a;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            font-size: 0.95em;
         }
 
         /* Countdown Card */
@@ -177,10 +168,12 @@
         .last-balls-row {
             display: flex;
             gap: 5px;
+            max-width: 170px;
+            overflow-x: auto;
         }
         .mini-ball {
-            width: 22px;
-            height: 22px;
+            min-width: 24px;
+            height: 24px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -198,22 +191,22 @@
         .flip-card {
             background: #ffffff;
             color: #0f172a;
-            font-size: 1.15em;
+            font-size: 1.25em;
             font-weight: 900;
-            padding: 4px 6px;
-            border-radius: 4px;
+            padding: 4px 7px;
+            border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.12);
         }
         .cd-period-label {
             text-align: right;
-            font-size: 0.75em;
+            font-size: 0.82em;
             color: #78350f;
-            margin-top: 4px;
-            font-weight: 700;
+            margin-top: 6px;
+            font-weight: 800;
             letter-spacing: 0.5px;
         }
 
-        /* Betting Controls Area */
+        /* Betting Controls */
         .bet-action-board {
             background: var(--card-white);
             margin: 0 14px 14px 14px;
@@ -240,7 +233,6 @@
         .bg-btn-violet { background: var(--color-violet); }
         .bg-btn-red { background: var(--color-red); }
 
-        /* 0-9 Shiny Balls Grid */
         .balls-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -266,7 +258,6 @@
             object-fit: contain;
         }
 
-        /* Multipliers & Random Bar */
         .chips-bar {
             display: flex;
             gap: 6px;
@@ -295,7 +286,6 @@
             background: #fef2f2;
         }
 
-        /* Big / Small Row */
         .big-small-row {
             display: flex;
             border-radius: 25px;
@@ -372,13 +362,14 @@
             display: inline-block;
         }
 
-        /* Bet Confirm Sheet/Popup */
+        /* Modal Overlay & Popup */
         .dialog-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.65); z-index: 3000; display: none;
             justify-content: center; align-items: center; padding: 15px;
         }
         .dialog-overlay.show { display: flex; }
+
         .bet-confirm-modal {
             background: #fff; border-radius: 16px; width: 100%; max-width: 340px;
             overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -412,26 +403,51 @@
         .btn-cancel-bet { flex: 1; padding: 12px; background: #f8fafc; border: none; font-weight: 600; cursor: pointer; }
         .btn-submit-bet { flex: 2; padding: 12px; background: #3b82f6; color: #fff; border: none; font-weight: 800; cursor: pointer; }
 
-        /* Floating Dragon/Support Icon */
-        .floating-support-btn {
-            position: fixed; bottom: 20px; right: calc(50% - 195px);
-            width: 46px; height: 46px; border-radius: 50%;
-            background: #f59e0b; box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-            display: flex; align-items: center; justify-content: center; z-index: 100;
-            cursor: pointer;
+        /* Auth Container */
+        #auth-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #0d1117; z-index: 9999;
+            display: flex; justify-content: center; align-items: center; padding: 15px;
+        }
+        #auth-box {
+            width: 100%; max-width: 380px; padding: 25px;
+            background-color: #161b22; border: 1px solid #30363d;
+            border-radius: 12px; color: #c9d1d9;
+        }
+        .auth-input {
+            width: 100%; padding: 10px; font-size: 1em; border-radius: 6px;
+            border: 1px solid #30363d; background-color: #0d1117; color: #c9d1d9;
+            box-sizing: border-box; margin-bottom: 12px;
+        }
+        .auth-btn {
+            width: 100%; padding: 10px; border-radius: 6px; border: none;
+            background-color: #58a6ff; color: #fff; font-weight: 700; cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <div class="app-wrapper">
+    <!-- AUTH CONTAINER (LOGIN FIRST) -->
+    <div id="auth-container" style="display: none;">
+        <div id="auth-box">
+            <h2 style="text-align:center; margin-top:0;">WINxGo1 Login</h2>
+            <p id="auth-error-msg" style="color:#ef4444; font-size:0.85em; text-align:center; display:none;"></p>
+            <input type="email" id="auth_email" class="auth-input" placeholder="Email">
+            <input type="password" id="auth_pass" class="auth-input" placeholder="Password">
+            <button class="auth-btn" id="btn_auth_login">Login</button>
+            <p style="text-align:center; font-size:0.85em; margin-top:15px;">
+                No account? <a href="#" id="link_auth_signup" style="color:#58a6ff;">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="app-wrapper" id="main_app_wrapper">
         <!-- Top Yellow Header -->
         <header class="top-nav-banner">
-            <span style="cursor:pointer; font-size: 1.2em;">‹</span>
-            <span class="logo-text">WINxGo1</span>
-            <div style="display:flex; gap: 8px;">
-                <span style="cursor:pointer;">🎧</span>
-                <span style="cursor:pointer;">🔊</span>
+            <span style="font-size: 1.2em; font-weight: 700;">WINxGo1</span>
+            <div style="display:flex; gap: 10px; align-items: center;">
+                <span id="user_display_email" style="font-size:0.75em; opacity:0.9;"></span>
+                <span style="cursor:pointer;" onclick="auth.signOut()">🚪</span>
             </div>
         </header>
 
@@ -450,56 +466,34 @@
             </div>
         </div>
 
-        <!-- Timer Tabs -->
-        <div class="timer-modes-row">
-            <div class="mode-tab active">
-                <span>⏱️</span>
-                <span>WINxGo1</span>
-                <span>30sec</span>
-            </div>
-            <div class="mode-tab">
-                <span>⏱️</span>
-                <span>WINxGo1</span>
-                <span>1 Min</span>
-            </div>
-            <div class="mode-tab">
-                <span>⏱️</span>
-                <span>WINxGo1</span>
-                <span>3 Min</span>
-            </div>
-            <div class="mode-tab">
-                <span>⏱️</span>
-                <span>WINxGo1</span>
-                <span>5 Min</span>
-            </div>
+        <!-- Single 1 Min Mode Indicator -->
+        <div class="single-mode-bar">
+            <span>⏱️</span>
+            <span>WINxGo1 - 1 Minute Mode</span>
         </div>
 
-        <!-- Countdown Header Display -->
+        <!-- Countdown Card -->
         <div class="countdown-board">
             <div class="cd-top">
                 <button class="cd-btn-rule">📖 How to play</button>
                 <span>Time remaining</span>
             </div>
             <div class="cd-middle">
-                <div class="last-balls-row" id="top_winning_balls_preview">
-                    <span class="mini-ball" style="background:#22c55e;">7</span>
-                    <span class="mini-ball" style="background:#ef4444;">6</span>
-                    <span class="mini-ball" style="background:#22c55e;">7</span>
-                    <span class="mini-ball" style="background:#a855f7;">0</span>
-                    <span class="mini-ball" style="background:#22c55e;">1</span>
-                </div>
+                <div class="last-balls-row" id="top_winning_balls_preview"></div>
                 <div class="flip-clock">
                     <span class="flip-card" id="flip_m1">0</span>
                     <span class="flip-card" id="flip_m2">0</span>
                     <span style="font-weight:900; align-self:center;">:</span>
-                    <span class="flip-card" id="flip_s1">3</span>
+                    <span class="flip-card" id="flip_s1">0</span>
                     <span class="flip-card" id="flip_s2">0</span>
                 </div>
             </div>
-            <div class="cd-period-label" id="current_period_label">20261012100050249</div>
+            <div class="cd-period-label">
+                Period: <span id="current_period_label">Loading...</span>
+            </div>
         </div>
 
-        <!-- Betting Actions Container -->
+        <!-- Betting Actions Area -->
         <div class="bet-action-board">
             <div class="colors-row">
                 <button class="btn-color bg-btn-green" onclick="openBetConfirm('color', 'Green')">Green</button>
@@ -507,7 +501,7 @@
                 <button class="btn-color bg-btn-red" onclick="openBetConfirm('color', 'Red')">Red</button>
             </div>
 
-            <!-- 0-9 Original Number Balls Grid -->
+            <!-- 0-9 Ball Grid -->
             <div class="balls-grid" id="balls_grid_wrapper"></div>
 
             <!-- Multipliers & Random Bar -->
@@ -521,14 +515,14 @@
                 <button class="btn-chip" onclick="setQuickMultiplier(100, this)">X100</button>
             </div>
 
-            <!-- Big / Small Buttons -->
+            <!-- Big / Small Row -->
             <div class="big-small-row">
                 <button class="btn-size btn-big" onclick="openBetConfirm('size', 'Big')">Big</button>
                 <button class="btn-size btn-small" onclick="openBetConfirm('size', 'Small')">Small</button>
             </div>
         </div>
 
-        <!-- History Display -->
+        <!-- History Container -->
         <div class="history-card-wrap">
             <div class="hist-nav-row">
                 <button class="hist-tab-btn active" id="tab_btn_game_hist" onclick="switchHistTab('game')">Game history</button>
@@ -567,15 +561,19 @@
         </div>
     </div>
 
-    <!-- Bet Confirmation Modal -->
+    <!-- Bet Confirm Modal -->
     <div id="bet_confirm_overlay" class="dialog-overlay">
         <div class="bet-confirm-modal">
             <div class="bet-confirm-header" id="modal_header_bg">
-                <p class="game-name">WINxGo1 30sec</p>
+                <p class="game-name">WINxGo1 1Min</p>
                 <div class="select-badge" id="modal_select_badge">Select Small</div>
             </div>
 
             <div class="bet-confirm-body">
+                <p style="font-size:0.8em; color:#64748b; margin:0 0 10px 0; text-align:center;">
+                    Betting for Period: <strong id="modal_period_display" style="color:#0f172a;">-</strong>
+                </p>
+
                 <div class="bet-row">
                     <label style="font-weight:700; font-size:0.88em;">Balance</label>
                     <div class="bet-chip-group">
@@ -617,7 +615,6 @@
     </div>
 
 <script>
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAezPrNJpJE-4KZD_AuT_kON5VDmpTefbc",
       authDomain: "winx-c91df.firebaseapp.com",
@@ -634,11 +631,10 @@
 
     let currentUserUid = null;
     let currentBalance = 0;
-    let ct_periodId = "";
-    let ct_countdown = 30;
+    let currentActivePeriod = 1000;
+    let ct_countdown = 60;
     let activeInterval = null;
 
-    // Active Bet State
     let activeSelection = { type: '', val: '', unit: 1, qty: 1, mult: 1 };
 
     const numberBallImgs = [
@@ -654,19 +650,55 @@
         'https://i.ibb.co/DgYwxN7r/file-00000000e8546230b05909132da85d93.png'
     ];
 
-    // Auth State
+    // Auth Handling
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUserUid = user.uid;
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('main_app_wrapper').style.display = 'flex';
+            document.getElementById('user_display_email').textContent = user.email;
+
             db.ref(`users/${user.uid}/balance`).on('value', snap => {
                 currentBalance = snap.val() || 0;
                 document.getElementById('wallet_balance').textContent = currentBalance.toFixed(2);
             });
+
             listenMyBets(user.uid);
+            syncGlobalPeriodAndGame();
+        } else {
+            currentUserUid = null;
+            document.getElementById('auth-container').style.display = 'flex';
+            document.getElementById('main_app_wrapper').style.display = 'none';
         }
     });
 
-    // Initialize 0-9 Balls Grid
+    document.getElementById('btn_auth_login').addEventListener('click', () => {
+        const e = document.getElementById('auth_email').value.trim();
+        const p = document.getElementById('auth_pass').value;
+        const err = document.getElementById('auth-error-msg');
+        err.style.display = 'none';
+
+        auth.signInWithEmailAndPassword(e, p).catch(error => {
+            err.textContent = error.message;
+            err.style.display = 'block';
+        });
+    });
+
+    document.getElementById('link_auth_signup').addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const e = document.getElementById('auth_email').value.trim();
+        const p = document.getElementById('auth_pass').value;
+        const err = document.getElementById('auth-error-msg');
+        err.style.display = 'none';
+
+        if (!e || !p) { err.textContent = 'Enter email & password.'; err.style.display = 'block'; return; }
+        auth.createUserWithEmailAndPassword(e, p).catch(error => {
+            err.textContent = error.message;
+            err.style.display = 'block';
+        });
+    });
+
+    // 0-9 Grid Initialization
     function initBallsGrid() {
         const wrap = document.getElementById('balls_grid_wrapper');
         wrap.innerHTML = '';
@@ -679,112 +711,55 @@
         }
     }
 
-    // Engine & Timer
-    function startTimer() {
+    // Single Synchronized Period Loop (1000 se continuous)
+    function syncGlobalPeriodAndGame() {
         initBallsGrid();
+        listenGameHistory();
+
+        // Check or Initialize Global Period at 1000
+        const periodRef = db.ref('game_state/current_period');
+        periodRef.on('value', snap => {
+            if (!snap.exists()) {
+                currentActivePeriod = 1000;
+                periodRef.set(1000);
+            } else {
+                currentActivePeriod = snap.val();
+            }
+            document.getElementById('current_period_label').textContent = currentActivePeriod;
+        });
+
+        startContinuousTimer();
+    }
+
+    function startContinuousTimer() {
         clearInterval(activeInterval);
 
-        const d = new Date();
-        ct_periodId = `${d.getFullYear()}${(d.getMonth()+1).toString().padStart(2,"0")}${d.getDate().toString().padStart(2,"0")}${String(Math.floor(d.getUTCHours()*120+d.getUTCMinutes()*2)).padStart(5,"0")}`;
-        document.getElementById('current_period_label').textContent = ct_periodId;
-
-        ct_countdown = 30 - (d.getSeconds() % 30);
-
         activeInterval = setInterval(() => {
-            ct_countdown--;
-            updateClockDisplay(ct_countdown);
-            if (ct_countdown <= 0) {
-                clearInterval(activeInterval);
-                finishRound();
+            const now = new Date();
+            ct_countdown = 60 - now.getSeconds();
+
+            const secStr = ct_countdown.toString().padStart(2, "0");
+            document.getElementById('flip_m1').textContent = "0";
+            document.getElementById('flip_m2').textContent = "0";
+            document.getElementById('flip_s1').textContent = secStr[0];
+            document.getElementById('flip_s2').textContent = secStr[1];
+
+            // Round End Trigger at second 0
+            if (ct_countdown === 60 || ct_countdown === 0) {
+                executeAutoRoundEnd();
             }
         }, 1000);
-
-        listenGameHistory();
     }
 
-    function updateClockDisplay(sec) {
-        if (sec < 0) sec = 0;
-        const sStr = sec.toString().padStart(2, "0");
-        document.getElementById('flip_s1').textContent = sStr[0];
-        document.getElementById('flip_s2').textContent = sStr[1];
-    }
+    // Automatically ends round and increments period
+    let isEndingRound = false;
+    async function executeAutoRoundEnd() {
+        if (isEndingRound) return;
+        isEndingRound = true;
 
-    // History Listeners (FIXED)
-    function listenGameHistory() {
-        db.ref('ct_game_history').limitToLast(12).on('value', snap => {
-            const tbody = document.getElementById('game_history_tbody');
-            tbody.innerHTML = '';
-            if (!snap.exists()) {
-                tbody.innerHTML = '<tr><td colspan="4">No rounds yet.</td></tr>';
-                return;
-            }
+        const periodFinished = currentActivePeriod;
 
-            let rounds = [];
-            snap.forEach(c => rounds.push(c.val()));
-            rounds.reverse();
-
-            // Update top 5 preview balls
-            const previewBalls = document.getElementById('top_winning_balls_preview');
-            previewBalls.innerHTML = '';
-            rounds.slice(0, 5).forEach(r => {
-                const color = r.winColors && r.winColors.includes('Green') ? '#22c55e' : (r.winColors && r.winColors.includes('Red') ? '#ef4444' : '#a855f7');
-                previewBalls.innerHTML += `<span class="mini-ball" style="background:${color};">${r.winNum}</span>`;
-            });
-
-            // Table rows
-            rounds.forEach(r => {
-                const row = tbody.insertRow();
-                row.insertCell(0).textContent = r.period || '...';
-                
-                const numCell = row.insertCell(1);
-                numCell.innerHTML = `<span class="num-strong" style="color:${getNumberColor(r.winNum)}">${r.winNum}</span>`;
-                
-                row.insertCell(2).textContent = r.winSize || (r.winNum >= 5 ? 'Big' : 'Small');
-
-                const colCell = row.insertCell(3);
-                const dots = (r.winColors || []).map(c => `<span class="dot-circle" style="background:${c.toLowerCase() === 'green' ? '#22c55e' : (c.toLowerCase() === 'red' ? '#ef4444' : '#a855f7')}"></span>`).join(' ');
-                colCell.innerHTML = dots;
-            });
-        });
-    }
-
-    function getNumberColor(num) {
-        if (num === 0 || num === 5) return '#a855f7';
-        return [1, 3, 7, 9].includes(num) ? '#22c55e' : '#ef4444';
-    }
-
-    function listenMyBets(uid) {
-        db.ref(`users/${uid}/my_ct_history`).limitToLast(12).on('value', snap => {
-            const tbody = document.getElementById('my_history_tbody');
-            tbody.innerHTML = '';
-            if (!snap.exists()) {
-                tbody.innerHTML = '<tr><td colspan="4">No bets found.</td></tr>';
-                return;
-            }
-            let list = [];
-            snap.forEach(c => list.push(c.val()));
-            list.reverse().forEach(b => {
-                const row = tbody.insertRow();
-                row.insertCell(0).textContent = (b.period || '').slice(-5);
-                row.insertCell(1).textContent = b.value;
-                row.insertCell(2).textContent = `₹${(b.amount || 0).toFixed(2)}`;
-                const resCell = row.insertCell(3);
-                if (b.result === 'waiting') {
-                    resCell.textContent = 'Waiting';
-                    resCell.style.color = '#f59e0b';
-                } else if (b.result > 0) {
-                    resCell.textContent = `+₹${b.result.toFixed(2)}`;
-                    resCell.style.color = '#22c55e';
-                } else {
-                    resCell.textContent = `-₹${Math.abs(b.amount).toFixed(2)}`;
-                    resCell.style.color = '#ef4444';
-                }
-            });
-        });
-    }
-
-    // Finish Round Logic
-    async function finishRound() {
+        // Admin result check or random
         const adminSnap = await db.ref('admin_controls/color_trading/next_result').once('value');
         let winNum = Math.floor(Math.random() * 10);
         if (adminSnap.exists() && adminSnap.val() !== null) {
@@ -800,18 +775,20 @@
         if (winNum === 0 || winNum === 5) winColors.push('Violet');
         const winSize = winNum >= 5 ? 'Big' : 'Small';
 
-        await db.ref(`ct_game_history/${ct_periodId}`).set({
-            period: ct_periodId,
+        // Store result for this period
+        await db.ref(`ct_game_history/${periodFinished}`).set({
+            period: periodFinished,
             winNum: winNum,
             winSize: winSize,
-            winColors: winColors
+            winColors: winColors,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
         });
 
-        // Settle user bets
+        // Settle user bets on this exact period
         if (currentUserUid) {
-            const myBetsSnap = await db.ref(`users/${currentUserUid}/my_ct_history`).orderByChild('period').equalTo(ct_periodId).once('value');
-            if (myBetsSnap.exists()) {
-                myBetsSnap.forEach(snap => {
+            const betsSnap = await db.ref(`users/${currentUserUid}/my_ct_history`).orderByChild('period').equalTo(periodFinished).once('value');
+            if (betsSnap.exists()) {
+                betsSnap.forEach(snap => {
                     const b = snap.val();
                     let won = false;
                     let mult = 2;
@@ -830,10 +807,88 @@
             }
         }
 
-        setTimeout(startTimer, 1500);
+        // Increment period continuously (1000 -> 1001 -> 1002...)
+        const nextPeriod = periodFinished + 1;
+        await db.ref('game_state/current_period').set(nextPeriod);
+
+        setTimeout(() => { isEndingRound = false; }, 3000);
     }
 
-    // Modal Confirmation Handlers
+    // Complete Game History Render
+    function listenGameHistory() {
+        db.ref('ct_game_history').limitToLast(20).on('value', snap => {
+            const tbody = document.getElementById('game_history_tbody');
+            tbody.innerHTML = '';
+            if (!snap.exists()) {
+                tbody.innerHTML = '<tr><td colspan="4">No rounds yet.</td></tr>';
+                return;
+            }
+
+            let rounds = [];
+            snap.forEach(c => rounds.push(c.val()));
+            rounds.reverse();
+
+            // Preview Balls
+            const previewBalls = document.getElementById('top_winning_balls_preview');
+            previewBalls.innerHTML = '';
+            rounds.slice(0, 5).forEach(r => {
+                const color = r.winColors && r.winColors.includes('Green') ? '#22c55e' : (r.winColors && r.winColors.includes('Red') ? '#ef4444' : '#a855f7');
+                previewBalls.innerHTML += `<span class="mini-ball" style="background:${color};">${r.winNum}</span>`;
+            });
+
+            // Table rows with periods
+            rounds.forEach(r => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = r.period;
+                
+                const numCell = row.insertCell(1);
+                numCell.innerHTML = `<span class="num-strong" style="color:${getNumberColor(r.winNum)}">${r.winNum}</span>`;
+                
+                row.insertCell(2).textContent = r.winSize;
+
+                const colCell = row.insertCell(3);
+                const dots = (r.winColors || []).map(c => `<span class="dot-circle" style="background:${c.toLowerCase() === 'green' ? '#22c55e' : (c.toLowerCase() === 'red' ? '#ef4444' : '#a855f7')}"></span>`).join(' ');
+                colCell.innerHTML = dots;
+            });
+        });
+    }
+
+    function getNumberColor(num) {
+        if (num === 0 || num === 5) return '#a855f7';
+        return [1, 3, 7, 9].includes(num) ? '#22c55e' : '#ef4444';
+    }
+
+    function listenMyBets(uid) {
+        db.ref(`users/${uid}/my_ct_history`).limitToLast(15).on('value', snap => {
+            const tbody = document.getElementById('my_history_tbody');
+            tbody.innerHTML = '';
+            if (!snap.exists()) {
+                tbody.innerHTML = '<tr><td colspan="4">No bets found.</td></tr>';
+                return;
+            }
+            let list = [];
+            snap.forEach(c => list.push(c.val()));
+            list.reverse().forEach(b => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = b.period;
+                row.insertCell(1).textContent = b.value;
+                row.insertCell(2).textContent = `₹${(b.amount || 0).toFixed(2)}`;
+                const resCell = row.insertCell(3);
+                if (b.result === 'waiting') {
+                    resCell.textContent = 'Waiting';
+                    resCell.style.color = '#f59e0b';
+                } else if (b.result > 0) {
+                    resCell.textContent = `+₹${b.result.toFixed(2)}`;
+                    resCell.style.color = '#22c55e';
+                } else {
+                    resCell.textContent = `-₹${Math.abs(b.amount).toFixed(2)}`;
+                    resCell.style.color = '#ef4444';
+                }
+            });
+        });
+    }
+
+    // Modal Confirmation Handlers (With Matching Period)
     window.openBetConfirm = function(type, val) {
         if (ct_countdown <= 5) {
             alert('Round is ending. Please bet on next round.');
@@ -844,6 +899,7 @@
         const modalHeader = document.getElementById('modal_header_bg');
         const badge = document.getElementById('modal_select_badge');
         badge.textContent = `Select ${val}`;
+        document.getElementById('modal_period_display').textContent = currentActivePeriod;
 
         if (val === 'Red' || val === 'Big') {
             modalHeader.style.background = '#ef4444';
@@ -891,6 +947,7 @@
         document.getElementById('btn_final_submit').textContent = `Total amount ₹${total.toFixed(2)}`;
     }
 
+    // Place Bet on exact Current Period
     window.confirmAndPlaceBet = function() {
         if (!document.getElementById('agree_rules').checked) {
             alert('Please agree to rules.');
@@ -906,13 +963,15 @@
             return;
         }
 
+        const betPeriod = currentActivePeriod;
+
         db.ref(`users/${currentUserUid}/balance`).transaction(bal => (bal >= total ? bal - total : undefined)).then(res => {
             if (!res.committed) {
                 alert('Low balance.');
                 return;
             }
             db.ref(`users/${currentUserUid}/my_ct_history`).push({
-                period: ct_periodId,
+                period: betPeriod,
                 type: activeSelection.type,
                 value: activeSelection.val,
                 amount: total,
@@ -920,7 +979,7 @@
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             closeBetConfirm();
-            alert(`Bet of ₹${total} placed on ${activeSelection.val}!`);
+            alert(`Bet of ₹${total} placed on ${activeSelection.val} for Period ${betPeriod}!`);
         });
     };
 
@@ -947,9 +1006,6 @@
             document.getElementById('my_history_table').style.display = 'table';
         }
     };
-
-    // Auto start
-    startTimer();
 </script>
 </body>
 </html>
